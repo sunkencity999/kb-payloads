@@ -1,0 +1,3 @@
+192.168.99.1 lladdr 5c:7d:7d:aa:bb:cc REACHABLE
+192.168.99.249 lladdr a0:ee:1a:aa:bb:cc STALE
+fe80::dead:beef:1 dev mock0 lladdr 00:11:22:33:44:55 REACHABLE

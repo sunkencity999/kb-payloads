@@ -1,0 +1,1 @@
+{"payload": "kb_ghostrecon", "parent": "user/general", "key": "user~general~kb_ghostrecon", "time": "2026-09-06T09:45:00-07:00", "last_hash": "", "zip": "", "title": "KB GhostRecon", "author": "Smaug", "description": "Fully passive device profiler: listens to ARP/mDNS/SSDP/NBNS chatter, builds MAC->vendor->class->name inventory. Sends zero packets.", "version": "1.0"}

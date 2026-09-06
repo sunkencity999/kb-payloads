@@ -1,0 +1,18 @@
+#!/bin/sh
+# Deterministic `ip` mock. Serves exactly the calls kb_netrecon makes:
+#   ip -o route get 8.8.8.8   -> default route line (dev mock0)
+#   ip -o -4 route show ...   -> link subnet
+#   ip -o -4 addr show ...    -> inet addr
+#   ip neigh show [dev X]     -> $NR_MOCK_DIR/neigh.txt (IPv4 + IPv6 noise, mixed formats)
+: "${NR_MOCK_DIR:=/tmp/nr_mock}"
+case "$*" in
+  *"route get 8.8.8.8"*)
+    echo "8.8.8.8 via 192.168.99.1 dev mock0 proto static src 192.168.99.219 uid 0" ;;
+  *"-4 route show"*)
+    echo "192.168.99.0/24 proto kernel scope link src 192.168.99.219" ;;
+  *"-4 addr show"*)
+    echo "mock0    inet 192.168.99.219/24 brd 192.168.99.255 scope global mock0" ;;
+  *"neigh show"*)
+    cat "$NR_MOCK_DIR/neigh.txt" 2>/dev/null ;;
+esac
+exit 0

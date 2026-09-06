@@ -1,0 +1,16 @@
+#!/bin/sh
+# Deterministic tcpdump mock for kb_ghostrecon harness testing.
+# Emits $GR_MOCK_DIR/cap.txt (a real `tcpdump -n -e -l -A` capture fixture pulled
+# off the Pager on 2026-09-06) as if it had listened that long, then exits 0.
+# GR_MOCK_QUIET=1 -> emit nothing: the "network too quiet" path.
+# tcpdump is NOT a busybox applet (verified `busybox --list`), so a PATH-first
+# mock like this is actually reached - unlike the `ip` applet lesson.
+: "${GR_MOCK_DIR:=/tmp/gr_mock}"
+# sanity: caller must have passed the flags the payload contract says we use
+case "$*" in
+  *-e*-l*-A*) ;;
+  *) echo "tcpdump-mock: unexpected args: $*" >&2; exit 2 ;;
+esac
+[ "${GR_MOCK_QUIET:-0}" = "1" ] && exit 0
+cat "$GR_MOCK_DIR/cap.txt" 2>/dev/null
+exit 0

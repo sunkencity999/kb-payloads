@@ -1,0 +1,1 @@
+{"payload": "kb_netrecon", "parent": "user/general", "key": "user~general~kb_netrecon", "time": "2026-09-05T14:11:34-07:00", "last_hash": "", "zip": "", "title": "KB NetRecon", "author": "Smaug", "description": "Fast host discovery (ICMP+TCP) then ARP MAC pass on the joined network. v1.1: ~5x faster sweep, near-full MAC coverage.", "version": "1.1"}

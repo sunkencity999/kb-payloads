@@ -1,0 +1,3 @@
+#!/bin/sh
+echo 'ESSID: "MockNet"'
+exit 0

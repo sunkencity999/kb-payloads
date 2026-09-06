@@ -1,0 +1,810 @@
+1788680122.310148 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.P.....+
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680122.317577 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.1.....e
+............1..............._oculusal_sp._tcp.local.....
+1788680122.318866 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`
+`H.1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680122.321562 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`....1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680122.325423 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.Q......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.334378 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.365280 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.370424 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`
+`H.e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.377313 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.2.....0
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.380972 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.R......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.402380 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.3...../
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.403611 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.S.....%
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680122.408381 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.4....._
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680122.409775 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`
+`H.4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680122.416431 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`....4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680122.420196 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....T......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.463186 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`
+`H.n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.466975 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.478871 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.500510 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....U......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680122.504170 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....5.....$
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.512467 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....6.....#
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680122.525116 d8:d2:6151:c7:72 > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 42: Request who-has 192.168.99.36 tell 192.168.99.36, length 28
+..........a...
+..$......
+..$
+1788680123.745390 5c:7d:7de1:08:b7 > 06:13:37b5:e2:eb, ethertype ARP (0x0806), length 60: Request who-has 192.168.99.219 tell 192.168.99.1, length 46
+........\}}1..
+.........
+.....................
+1788680123.745491 06:13:37b5:e2:eb > 5c:7d:7de1:08:b7, ethertype ARP (0x0806), length 42: Reply 192.168.99.219 is-at 06:13:37b5:e2:eb, length 28
+..........7...
+...\}}1..
+...
+1788680124.373944 4c:b9:eaf7:9c:dc > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 42: Request who-has 192.168.99.1 (ff:ff:ffda:ff:25) tell 192.168.99.90, length 28
+........L....w
+..Z......
+...
+1788680124.375594 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.V.....%
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680124.376295 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.7....._
+............1..............._oculusal_sp._tcp.local.....
+1788680124.377591 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`..f.1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680124.380453 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`
+?2.1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680124.384889 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.W......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.389261 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`
+?2.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.390178 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..f.e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.394116 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`
+?2.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.397710 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..f.e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.401436 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.8.....*
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.405090 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.9.....)
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.408723 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.X......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.411066 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.Y......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680124.411068 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.:.....Y
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680124.413019 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`..f.4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680124.460160 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`
+?2.4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680124.464137 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....Z......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.483008 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..f.n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.486997 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`
+?2.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.491470 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..f.n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680124.495514 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`
+?2.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.500947 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....;......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.504562 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....<......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680124.508764 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....[......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680125.014233 5c:ff:35d4:f9:e2 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.22.55381 > 239.255.255.250.1900: UDP, length 170
+E...........
+........U.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680125.016418 10:ff:e04b:a9:bd > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.49.55380 > 239.255.255.250.1900: UDP, length 170
+E....N......
+..1.....T.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680125.985444 5c:ff:35d4:f9:e2 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.22.55381 > 239.255.255.250.1900: UDP, length 170
+E...........
+........U.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680125.987633 10:ff:e04b:a9:bd > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.49.55380 > 239.255.255.250.1900: UDP, length 170
+E....O......
+..1.....T.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680125.989996 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 236: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 194
+E...G.@...0U..d......H.l..T*M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1VideoGateway:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680125.992310 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 232: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 190
+E...G.@...0`..d......H.l.. .M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1Renderer:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680125.994751 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 240: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 198
+E...G.@...0J..d......H.l..~pM-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1BroadbandGateway:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680125.997240 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 233: 169.254.100.1.50759 > 239.255.255.250.1900: UDP, length 191
+E...G.@...0P..d......G.l....M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:BasicDevice:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680126.933192 5c:ff:35d4:f9:e2 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.22.55381 > 239.255.255.250.1900: UDP, length 170
+E.... ......
+........U.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680126.933193 10:ff:e04b:a9:bd > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.49.55380 > 239.255.255.250.1900: UDP, length 170
+E....P......
+..1.....T.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680127.888697 5c:ff:35d4:f9:e2 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.22.55381 > 239.255.255.250.1900: UDP, length 170
+E....!......
+........U.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680127.890833 10:ff:e04b:a9:bd > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 212: 192.168.99.49.55380 > 239.255.255.250.1900: UDP, length 170
+E....Q......
+..1.....T.l....M-SEARCH * HTTP/1.1
+HOST: 239.255.255.250:1900
+MAN: "ssdp:discover"
+MX: 1
+ST: urn:dial-multiscreen-org:service:dial:1
+USER-AGENT: Chromium/126.0.6478.183 Windows
+
+
+1788680128.207217 30:56:0fe3:c8:fd > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 60: Request who-has 192.168.99.80 tell 192.168.99.183, length 46
+........0V.N..
+.........
+..P..................
+1788680128.540293 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.\......
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680128.541513 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.=.....Y
+............1..............._oculusal_sp._tcp.local.....
+1788680128.545180 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.]......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.546360 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`....1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680128.547695 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`..P.1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680128.551590 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.555523 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..P.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.559059 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.>.....$
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.562645 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.?.....#
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.566512 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..P.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.570133 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.^......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.861728 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.862745 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H._......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680128.864096 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`..P.4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680128.865311 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.@.....S
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680128.869230 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....`......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.870428 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`....4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680128.874400 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..P.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.878260 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680128.881965 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....A......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.885659 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....B......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680128.890988 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....a......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680129.171714 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680129.175556 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..P.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680129.188268 00:08:2227:45:d3 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 875: 192.168.99.82.5353 > 224.0.0.251.5353: 0*- [0q] 14/0/7 (Cache flush) TXT "bp=IAIqFHlhZ_AlTsMZUdLUnbXa2KiBaaDKU7WuY8MzE6MS-SU60TQyStmqRBPcTwihJGyJx3eEO1hZbFGdUV426vUHA-eTvt5N", PTR _nearbypresence._tcp.local., PTR nearby-presence-nsd-8abef6b0-4984b4ac-3cd18373-61ebbaf8._nearbypresence._tcp.local., (Cache flush) SRV Android.local.:40837 0 0, (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) A 192.168.99.82, (Cache flush) AAAA fe80::dead:beef:acba32dfe, (Cache flush) AAAA 2601:647:cf01:7aa0:6caf:5408:75ca:7086, (Cache flush) AAAA 2601:647:cf01:7aa0:243d:c16c:fe9d:fec7, (Cache flush) AAAA 2601:647:cf01:7aa0:b8ea:1c15:2c2f:4736 (833)
+E..]S.@...:)
+..R.........I..............8nearby-presence-nsd-8abef6b0-4984b4ac-3cd18373-61ebbaf8._nearbypresence._tcp.local..........dcbp=IAIqFHlhZ_AlTsMZUdLUnbXa2KiBaaDKU7WuY8MzE6MS-SU60TQyStmqRBPcTwihJGyJx3eEO1hZbFGdUV426vUHA-eTvt5N	_services._dns-sd._udp.Z...........E.E...............!.....x.........Android.Z.82.0.0.10.in-addr.arpa........x.....6.A.7.A.0.E.E.A.5.6.A.A.2.3.9.7.0.0.0.0.0.0.0.0.0.0.0.0.0.8.E.F.ip6.0.......x.....6.8.0.7.A.C.5.7.8.0.4.5.F.A.C.6.0.A.A.7.1.0.F.C.7.4.6.0.1.0.6.2.........x.....7.C.E.F.D.9.E.F.C.6.1.C.D.3.4.2.........x.....6.3.7.4.F.2.C.2.5.1.C.1.A.E.8.B.........x.............x..
+..R.........x..........y2.e.............x..&..G..z.l.T.u.p..........x..&..G..z.$=.l.............x..&..G..z.....,/G6.../.......	........@.../.....x.........B./.....x...B......./.....x.........../.....x.........../.....x.........../.....x......@...
+1788680129.195941 00:08:2227:45:d3 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 895: fe80::dead:beef:acba32dfe.5353 > ff02::fb.5353: 0*- [0q] 14/0/7 (Cache flush) TXT "bp=IAIqFHlhZ_AlTsMZUdLUnbXa2KiBaaDKU7WuY8MzE6MS-SU60TQyStmqRBPcTwihJGyJx3eEO1hZbFGdUV426vUHA-eTvt5N", PTR _nearbypresence._tcp.local., PTR nearby-presence-nsd-8abef6b0-4984b4ac-3cd18373-61ebbaf8._nearbypresence._tcp.local., (Cache flush) SRV Android.local.:40837 0 0, (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) PTR Android.local., (Cache flush) A 192.168.99.82, (Cache flush) AAAA fe80::dead:beef:acba32dfe, (Cache flush) AAAA 2601:647:cf01:7aa0:6caf:5408:75ca:7086, (Cache flush) AAAA 2601:647:cf01:7aa0:243d:c16c:fe9d:fec7, (Cache flush) AAAA 2601:647:cf01:7aa0:b8ea:1c15:2c2f:4736 (833)
+`.h..I..........y2.e.........................I+.............8nearby-presence-nsd-8abef6b0-4984b4ac-3cd18373-61ebbaf8._nearbypresence._tcp.local..........dcbp=IAIqFHlhZ_AlTsMZUdLUnbXa2KiBaaDKU7WuY8MzE6MS-SU60TQyStmqRBPcTwihJGyJx3eEO1hZbFGdUV426vUHA-eTvt5N	_services._dns-sd._udp.Z...........E.E...............!.....x.........Android.Z.82.0.0.10.in-addr.arpa........x.....6.A.7.A.0.E.E.A.5.6.A.A.2.3.9.7.0.0.0.0.0.0.0.0.0.0.0.0.0.8.E.F.ip6.0.......x.....6.8.0.7.A.C.5.7.8.0.4.5.F.A.C.6.0.A.A.7.1.0.F.C.7.4.6.0.1.0.6.2.........x.....7.C.E.F.D.9.E.F.C.6.1.C.D.3.4.2.........x.....6.3.7.4.F.2.C.2.5.1.C.1.A.E.8.B.........x.............x..
+..R.........x..........y2.e.............x..&..G..z.l.T.u.p..........x..&..G..z.$=.l.............x..&..G..z.....,/G6.../.......	........@.../.....x.........B./.....x...B......./.....x.........../.....x.........../.....x.........../.....x......@...
+1788680129.196677 30:56:0fe3:c8:fd > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 60: Request who-has 192.168.99.80 tell 192.168.99.183, length 46
+........0V.N..
+.........
+..P..................
+1788680129.486968 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 102: 192.168.99.49.5353 > 224.0.0.251.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+E..X.b......
+..1.........D-.............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.490929 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 122: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+`
+...D...........G#@s.n......................D,.............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.490930 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 122: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+`.g..D................w......................D..............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.491374 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 102: 192.168.99.22.5353 > 224.0.0.251.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+E..X.C.....@
+............D-.............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.493585 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 102: 192.168.99.22.5353 > 224.0.0.251.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+E..X.D.....?
+............D-.............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.494022 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 102: 192.168.99.22.5353 > 224.0.0.251.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (60)
+E..X.E.....>
+............D-.............	_nvstream._tcp.local................
+.Devbox2..
+1788680129.497343 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 162: 192.168.99.22.5353 > 224.0.0.251.5353: 0 [1a] PTR (QM)? _nvstream._tcp.local. (120)
+E....F......
+.............-.............	_nvstream._tcp.local................
+.Devbox2..............	_nvstream._tcp.local................
+.Devbox2..
+1788680130.124306 30:56:0fe3:c8:fd > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 60: Request who-has 192.168.99.80 tell 192.168.99.183, length 46
+........0V.N..
+.........
+..P..................
+1788680130.385498 82:f5:8534:ac:95 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 232: fe80::dead:beef:3b13c3b59.5353 > ff02::fb.5353: 14 [1a] [4q] PTR (QM)? _googlecast._tcp.local. PTR (QM)? _%9E5E7C8F47989526C9BCD95D24084F6F0B27C5ED._sub._googlecast._tcp.local. PTR (QM)? _CFE7FEDA._sub._googlecast._tcp.local. ANY (QM)? DU7000-aabbccddeeff00112233445566ff00aa._googlecast._tcp.local. (170)
+`	...................^.8....................................._googlecast._tcp.local.....*_%9E5E7C8F47989526C9BCD95D24084F6F0B27C5ED._sub......	_CFE7FEDA.S....'DU7000-aabbccddeeff00112233445566ff00aa...................n
+1788680130.385499 82:f5:8534:ac:95 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 212: 192.168.99.181.5353 > 224.0.0.251.5353: 14 [1a] [4q] PTR (QM)? _googlecast._tcp.local. PTR (QM)? _%9E5E7C8F47989526C9BCD95D24084F6F0B27C5ED._sub._googlecast._tcp.local. PTR (QM)? _CFE7FEDA._sub._googlecast._tcp.local. ANY (QM)? DU7000-aabbccddeeff00112233445566ff00aa._googlecast._tcp.local. (170)
+E.....@.....
+.............e5............._googlecast._tcp.local.....*_%9E5E7C8F47989526C9BCD95D24084F6F0B27C5ED._sub......	_CFE7FEDA.S....'DU7000-aabbccddeeff00112233445566ff00aa...................n
+1788680130.493151 6c:70:cb39:6a:ca > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 392: 192.168.99.118.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/3 (Cache flush) PTR DU7000-aabbccddeeff00112233445566ff00aa._googlecast._tcp.local. (350)
+E..z._@.....
+..v.........f:.............._googlecast._tcp.local..........*'DU7000-aabbccddeeff00112233445566ff00aa...........x..#id=aabbccddeeff00112233445566778899.fn=65" Crystal UHD	md=DU7000.ic=/setup/icon.png.ve=05.st=0.ca=5.nf=1.bs=001A11FF0000#cd=7953EC83A0A0EC28E519AB2DC29E10F3.rm=279D40FCF8305FE9...!.....x.-.....I$aabbccdd-eeff-0011-9259-10bf9e1f4b1f...'.......x..
+..v
+1788680131.083586 a0:ee:1af6:3f:fb > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 100: 192.168.99.249.5353 > 224.0.0.251.5353: 0 [2q] PTR (QU)? _companion-link._tcp.local. PTR (QU)? _rdlink._tcp.local. (58)
+E..V[.....s.
+............B..............._companion-link._tcp.local......_rdlink......
+1788680131.087213 a0:ee:1af6:3f:fb > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 120: fe80::dead:beef:417050fde.5353 > ff02::fb.5353: 0 [2q] PTR (QU)? _companion-link._tcp.local. PTR (QU)? _rdlink._tcp.local. (58)
+`....B............P.}........................B..............._companion-link._tcp.local......_rdlink......
+1788680131.089706 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 232: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 190
+E...I.@.......d......H.l.. .M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1Renderer:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680131.094751 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 236: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 194
+E...J.@.......d......H.l..T*M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1VideoGateway:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680131.098357 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 233: 169.254.100.1.50759 > 239.255.255.250.1900: UDP, length 191
+E...J	@.......d......G.l....M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:BasicDevice:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680132.041588 a0:ee:1af6:3f:fb > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 100: 192.168.99.249.5353 > 224.0.0.251.5353: 0 [2q] PTR (QM)? _companion-link._tcp.local. PTR (QM)? _rdlink._tcp.local. (58)
+E..V0w.....+
+............B..............._companion-link._tcp.local......_rdlink......
+1788680132.045177 a0:ee:1af6:3f:fb > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 120: fe80::dead:beef:417050fde.5353 > ff02::fb.5353: 0 [2q] PTR (QM)? _companion-link._tcp.local. PTR (QM)? _rdlink._tcp.local. (58)
+`....B............P.}........................B..............._companion-link._tcp.local......_rdlink......
+1788680132.302652 e0:e2:e6ba:8c:51 > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 42: Request who-has 192.168.99.95 tell 192.168.99.95, length 28
+.............X
+.._......
+.._
+1788680132.445751 7c:78:b22e:8a:ef > ff:ff:ffda:ff:25, ethertype ARP (0x0806), length 60: Request who-has 192.168.99.1 tell 192.168.99.53, length 46
+........|x...N
+..5......
+.....................
+1788680134.916473 a0:ee:1af6:3f:fb > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 100: 192.168.99.249.5353 > 224.0.0.251.5353: 0 [2q] PTR (QM)? _companion-link._tcp.local. PTR (QM)? _rdlink._tcp.local. (58)
+E..V.!......
+............B..............._companion-link._tcp.local......_rdlink......
+1788680134.917901 a0:ee:1af6:3f:fb > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 120: fe80::dead:beef:417050fde.5353 > ff02::fb.5353: 0 [2q] PTR (QM)? _companion-link._tcp.local. PTR (QM)? _rdlink._tcp.local. (58)
+`....B............P.}........................B..............._companion-link._tcp.local......_rdlink......
+1788680135.818663 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 232: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 190
+E...\.@....$..d......H.l.. .M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1Renderer:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680135.824153 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 236: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 194
+E...\.@.......d......H.l..T*M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1VideoGateway:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680135.826452 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 240: 169.254.100.1.50760 > 239.255.255.250.1900: UDP, length 198
+E...\.@.......d......H.l..~pM-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:X1BroadbandGateway:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680135.829188 5c:7d:7de1:08:b7 > 01:00:5e6d:e6:56, ethertype IPv4 (0x0800), length 233: 169.254.100.1.50759 > 239.255.255.250.1900: UDP, length 191
+E...\.@.......d......G.l....M-SEARCH * HTTP/1.1
+Host: 239.255.255.250:1900
+Man: "ssdp:discover"
+ST: urn:schemas-upnp-org:device:BasicDevice:1
+MX: 3
+User-Agent: Linux/5.15.144-prod-24.2-pd UPnP/1.0 GUPnP/0.20.10
+
+
+1788680136.527483 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.c......
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680136.528671 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.H.....N
+............1..............._oculusal_sp._tcp.local.....
+1788680136.538843 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.U..e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680136.542602 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..M.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.546460 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..M.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.550225 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.U..e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680136.553833 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.I......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.554985 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.e......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680136.846288 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.J.....I
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680136.847597 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`.U..4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680136.849102 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`..M.4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680136.852761 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.K......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.856496 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..M.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.860425 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.U..n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680136.864339 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..M.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680136.868117 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.U..n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680136.871808 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.f......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680136.875594 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....g......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.156107 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....L.....
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.159813 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....M......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.163470 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....h......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.472337 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.i......
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680137.473378 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.N.....H
+............1..............._oculusal_sp._tcp.local.....
+1788680137.474702 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`.U..1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680137.475989 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`..M.1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680137.477177 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.j......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680137.480948 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.k......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.482060 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.O.....D
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680137.483404 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`.U..4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680137.484891 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`..M.4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680137.488739 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.U..e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.492410 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..M.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.496261 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`..M.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.500046 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.U..e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.503873 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.U..n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.507805 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..M.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.511645 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`..M.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.515468 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.U..n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.794301 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.P......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.797874 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.Q......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.801491 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.l......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.805380 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....m......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680137.809035 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....R......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.812743 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....S......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680137.816345 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....n......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.407239 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.o......
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680139.407241 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.T.....B
+............1..............._oculusal_sp._tcp.local.....
+1788680139.413856 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`.4k.1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680139.413858 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`....1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680139.413858 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.p......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680139.413859 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.U.....>
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680139.413859 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`.4k.4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680139.415110 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`....4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680139.418880 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.q......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.425366 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.429362 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.4k.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.429982 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`.4k.e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.434802 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.717608 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.720977 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.4k.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.725156 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.729357 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`.4k.n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.732914 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.V......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.737209 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.W......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.738992 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.r......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.743620 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....s......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680139.749162 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....X......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.750033 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....Y......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680139.753828 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....t......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.442879 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.u......
+..1.........1..............._oculusal_sp._tcp.local.....
+1788680143.444045 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 83: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+E..E.Z.....<
+............1..............._oculusal_sp._tcp.local.....
+1788680143.445841 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.49.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.v......
+..1.........4..............._oculusal_sp_v2._tcp.local.....
+1788680143.449650 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.w......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.452553 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`....4................w......................4.<............._oculusal_sp_v2._tcp.local.....
+1788680143.453800 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 106: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+`....4...........G#@s.n......................4.*............._oculusal_sp_v2._tcp.local.....
+1788680143.458394 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.462248 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n...........G#@s.n......................n!A............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.466803 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`....1................w......................1.U............._oculusal_sp._tcp.local.....
+1788680143.470451 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....x......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.474653 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.475665 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 86: 192.168.99.22.5353 > 224.0.0.251.5353: 0 PTR (QM)? _oculusal_sp_v2._tcp.local. (44)
+E..H.[.....8
+............4..............._oculusal_sp_v2._tcp.local.....
+1788680143.493599 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.\......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.494768 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 103: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0 PTR (QM)? _oculusal_sp._tcp.local. (41)
+`....1...........G#@s.n......................1.C............._oculusal_sp._tcp.local.....
+1788680143.499073 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.502777 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....]......
+............n.c............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.510220 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 420: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+`....n................w......................n..............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.513877 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.y......
+..1.........e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.519931 5c:ff:35d4:f9:e2 > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 391: 192.168.99.22.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+E..y.^......
+............e
+.............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.523834 5c:ff:35d4:f9:e2 > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:41edf13fa.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e................w......................ee9............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+............<..&..G..z........?.........<..&..G..z.i2...............<..&..G..z..F....bT.........<................w.
+1788680143.550180 10:ff:e04b:a9:bd > 33:33:00c0:74:d2, ethertype IPv6 (0x86dd), length 411: fe80::dead:beef:daae3051b.5353 > ff02::fb.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp._tcp.local. (349)
+`....e...........G#@s.n......................e..............._oculusal_sp._tcp.local..........9.Test Owner::testBox._oculusal_sp._tcp.local..Test Owner::testBox._oculusal_sp._tcp.local..!.....x........	testBox.local..h..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+1788680143.553805 10:ff:e04b:a9:bd > 01:00:5ea7:d2:10, ethertype IPv4 (0x0800), length 400: 192.168.99.49.5353 > 224.0.0.251.5353: 0*- [0q] 1/0/7 PTR Test Owner::testBox._oculusal_sp_v2._tcp.local. (358)
+E....z......
+..1.........n!.............._oculusal_sp_v2._tcp.local..........<.Test Owner::testBox._oculusal_sp_v2._tcp.local..Test Owner::testBox._oculusal_sp_v2._tcp.local..!.....x........	testBox.local..n..........	testBox.local........<..
+..1.........<..&..G..z..................<..&..G..z.. ....N..........<..&..G..z. ...6............<...........G#@s.n.
+

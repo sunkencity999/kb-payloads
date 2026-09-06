@@ -1,0 +1,32 @@
+#!/bin/sh
+# Deterministic nmap mock for kb_netrecon harness testing.
+# Discovery calls (-oG -) emit "Status: Up" greppable lines for $NR_MOCK_DIR/up.txt.
+# ARP calls (-PR) emit real "-oN" shape: "Nmap scan report for IP" + optional
+# "MAC Address: xx (Vendor)" from $NR_MOCK_DIR/macmap.txt — so the payload's
+# awk field parsing ($5 / $3) is exercised against the genuine output format.
+: "${NR_MOCK_DIR:=/tmp/nr_mock}"
+UPLIST="$NR_MOCK_DIR/up.txt"
+MACMAP="$NR_MOCK_DIR/macmap.txt"
+
+mode=discover
+for a in "$@"; do [ "$a" = "-PR" ] && mode=arp; done
+
+if [ "$mode" = arp ]; then
+  for a in "$@"; do
+    case "$a" in *[0-9]) ;; *) continue ;; esac
+    grep -qx "$a" "$UPLIST" 2>/dev/null || continue
+    echo "Nmap scan report for $a"
+    echo "Host is up (0.0010s latency)."
+    mac=$(awk -v ip="$a" '$1==ip {print $2; exit}' "$MACMAP" 2>/dev/null)
+    [ -n "$mac" ] && echo "MAC Address: $mac (Mock Vendor)"
+    echo ""
+  done
+else
+  echo "# Nmap 7.95 mock scan initiated"
+  while read -r ip; do
+    [ -n "$ip" ] || continue
+    printf 'Host: %s ()\tStatus: Up\n' "$ip"
+  done < "$UPLIST"
+  echo "# Nmap done -- mock"
+fi
+exit 0

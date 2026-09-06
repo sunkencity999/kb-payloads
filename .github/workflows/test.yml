@@ -1,0 +1,11 @@
+name: harness
+on: [push, pull_request]
+jobs:
+  ash-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install busybox
+        run: sudo apt-get update && sudo apt-get install -y busybox
+      - name: run all payload paths
+        run: ./harness/test_all.sh

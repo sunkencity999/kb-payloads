@@ -1,0 +1,10 @@
+#!/bin/sh
+# `ip` mock for ghostrecon harness. Serves the calls kb_ghostrecon makes:
+#   ip -o route get 8.8.8.8  -> default route (dev mock0), or NOTHING if GR_MOCK_NO_ROUTE=1
+# GR_MOCK_NO_ROUTE=1 exercises the "Pager not joined to a network" path.
+case "$*" in
+  *"route get 8.8.8.8"*)
+    [ "${GR_MOCK_NO_ROUTE:-0}" = "1" ] && exit 0
+    echo "8.8.8.8 via 192.168.99.1 dev mock0 proto static metric 100" ;;
+esac
+exit 0

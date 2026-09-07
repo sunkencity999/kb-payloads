@@ -1,0 +1,11 @@
+#!/bin/sh
+# btmgmt mock for kb_beacon: `power off/on` resets discoverable state (device-verified:
+# the power-cycle ladder clears a stuck discoverable).
+: "${BCN_STATE:=/tmp/bcn_state}"
+case "$*" in
+  *"power off"*) sed 's/^disc=.*/disc=no/' "$BCN_STATE" > "$BCN_STATE.t" && mv "$BCN_STATE.t" "$BCN_STATE"
+                 echo "hci0 Set Power complete" ;;
+  *"power on"*)  echo "hci0 Set Power complete" ;;
+  *) echo "Invalid command in menu mgmt: $1" >&2; exit 1 ;;
+esac
+exit 0

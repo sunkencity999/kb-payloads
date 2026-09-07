@@ -1,0 +1,1 @@
+{"payload": "kb_beacon", "parent": "user/games", "key": "user~games~kb_beacon", "time": "2026-09-06T21:15:00-07:00", "last_hash": "", "zip": "", "title": "KB Beacon", "author": "Smaug", "description": "BLE name chameleon: advertise as a chosen name for minutes, always restores original identity (with power-cycle recovery ladder).", "version": "1.0"}

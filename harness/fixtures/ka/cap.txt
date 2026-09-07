@@ -1,0 +1,8 @@
+21:02:04.260292 2299328445us tsft 1.0 Mb/s 2452 MHz 11b -24dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:ff:ff:ff:ff:ff:ff SA:aa:bb:cc:dd:ee:01 DeAuthentication, reason 1: Unspecified reason
+21:02:05.100001 2299330001us tsft 1.0 Mb/s 2452 MHz 11b -30dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:ff:ff:ff:ff:ff:ff SA:aa:bb:cc:dd:ee:01 DeAuthentication, reason 1: Unspecified reason
+21:02:06.201433 2299331200us tsft 1.0 Mb/s 2452 MHz 11b -66dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:02 SA:00:11:22:33:44:01 DeAuthentication, reason 7: Class 3 frame from nonauthenticated STA
+21:02:08.552100 2299333001us tsft 6.0 Mb/s 2452 MHz -71dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:01 SA:00:11:22:33:44:02 Disassociation, reason 3: Deauth coming from AP class 2 sent from nonauthenticated or nonassociated STA
+21:02:09.001245 2299334100us tsft 6.0 Mb/s 2452 MHz -71dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:01 SA:00:11:22:33:44:02 AUTHENTICATION, seq 1, [IS] "shared" authentication algorithm number 3
+21:02:09.400121 2299334501us tsft 6.0 Mb/s 2452 MHz -71dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:02 SA:00:11:22:33:44:01 AUTHENTICATION, seq 2, [IA] status 0
+21:02:10.777890 2299335700us tsft 6.0 Mb/s 2452 MHz -71dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:01 SA:00:11:22:33:44:02 Assoc Request (testnet) [SSID (7B) testnet] [ERSRates 4] [EXTSUPRates]
+21:02:11.010004 2299335901us tsft 6.0 Mb/s 2452 MHz -68dBm signal [bit 22] BSSID:00:11:22:33:44:01 DA:00:11:22:33:44:02 SA:00:11:22:33:44:01 Assoc Response AID(0x11) req.accepted

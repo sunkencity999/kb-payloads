@@ -1,3 +1,6 @@
 *.orig
 *.new
 *.rej
+calls
+bcn_state*
+*.t

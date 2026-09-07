@@ -1,0 +1,18 @@
+#!/bin/sh
+# Deterministic bluetoothctl mock for kb_ghostbt.
+# GB_BT_CALLS counter file: 1st `devices` = pre-scan baseline, later = post-scan.
+# `--timeout N scan on` emits a real-shaped capture (NEW lines + CHG RSSI lines).
+: "${GBT_MOCK_DIR:=/tmp/gbt_mock}"
+case "$*" in
+  *scan\ on*)
+    cat "$GBT_MOCK_DIR/scan_out.txt" 2>/dev/null
+    exit 0 ;;
+  *devices*)
+    n=0
+    [ -f "$GBT_MOCK_DIR/calls" ] && n=$(cat "$GBT_MOCK_DIR/calls")
+    n=$(( n + 1 )); echo "$n" > "$GBT_MOCK_DIR/calls"
+    if [ "$n" -le 1 ]; then cat "$GBT_MOCK_DIR/devices_baseline.txt" 2>/dev/null
+    else cat "$GBT_MOCK_DIR/devices_after.txt" 2>/dev/null; fi
+    exit 0 ;;
+esac
+exit 0

@@ -1,0 +1,1 @@
+{"payload": "kb_kickaudit", "parent": "user/reconnaissance", "key": "user~reconnaissance~kb_kickaudit", "time": "2026-09-06T21:15:00-07:00", "last_hash": "", "zip": "", "title": "KB KickAudit", "author": "Smaug", "description": "Passive 802.11 deauth/disassoc audit: who is getting kicked, by whom, broadcast vs targeted. Listens only.", "version": "1.0"}

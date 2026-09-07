@@ -1,0 +1,37 @@
+#!/bin/sh
+# Stateful bluetoothctl mock for kb_beacon (device-behavior-faithful):
+# state in $BCN_STATE: "alias=..\ndisc=no". `show` renders bluez-shaped output.
+# BCN_STUBBORN=1 -> `discoverable off` FAILS with org.bluez.Error.Failed (the
+# device defect witnessed 2026-09-06); only btmgmt power-cycle clears it.
+: "${BCN_STATE:=/tmp/bcn_state}"
+[ -f "$BCN_STATE" ] || printf 'alias=BlueZ 5.72\ndisc=no\n' > "$BCN_STATE"
+A=$(sed -n 's/^alias=//p' "$BCN_STATE")
+D=$(sed -n 's/^disc=//p' "$BCN_STATE")
+case "$*" in
+  *show*)
+    printf 'Controller 00:11:22:33:44:55 (public)\n'
+    printf '\tName: %s\n' "$A"
+    printf '\tAlias: %s\n' "$A"
+    printf '\tPowered: yes\n'
+    printf '\tDiscoverable: %s\n' "$D"
+    printf '\tPairable: no\n'
+    ;;
+  *"system-alias"*)
+    NAME=$(echo "$*" | sed 's/.*system-alias *//; s/^"//; s/"$//')
+    sed "s/^alias=.*/alias=$NAME/" "$BCN_STATE" > "$BCN_STATE.t" && mv "$BCN_STATE.t" "$BCN_STATE"
+    echo "[CHG] Controller 00:11:22:33:44:55 Alias: $NAME"
+    ;;
+  *"discoverable on"*)
+    sed 's/^disc=.*/disc=yes/' "$BCN_STATE" > "$BCN_STATE.t" && mv "$BCN_STATE.t" "$BCN_STATE"
+    echo "[CHG] Controller 00:11:22:33:44:55 Discoverable: yes"
+    ;;
+  *"discoverable off"*)
+    if [ "${BCN_STUBBORN:-0}" = "1" ]; then
+      echo "Failed to set discoverable off: org.bluez.Error.Failed" >&2
+      exit 1
+    fi
+    sed 's/^disc=.*/disc=no/' "$BCN_STATE" > "$BCN_STATE.t" && mv "$BCN_STATE.t" "$BCN_STATE"
+    echo "[CHG] Controller 00:11:22:33:44:55 Discoverable: no"
+    ;;
+esac
+exit 0

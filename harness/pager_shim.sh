@@ -143,3 +143,9 @@ if [ -n "${GR_MOCK_DIR:-}" ]; then
   __GR_IP_MOCK="${SHIM_DIR:-.}/mocks/ghostrecon/bin/ip"
   ip() { "$__GR_IP_MOCK" "$@"; }
 fi
+
+# Same applet-collision rule for kb_kickaudit (ip used for iface + neigh checks).
+if [ -n "${KA_MOCK_DIR:-}" ]; then
+  __KA_IP_MOCK="${SHIM_DIR:-.}/mocks/kickaudit/bin/ip"
+  ip() { "$__KA_IP_MOCK" "$@"; }
+fi

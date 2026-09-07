@@ -1,0 +1,12 @@
+#!/bin/sh
+# `ip` mock for kickaudit harness (applet-collision rule -> shim defines ip() fcn).
+# KA_MOCK_NO_MON=1 -> monitor iface missing.
+case "$*" in
+  *"link show wlan0mon"*|*"link show wlan1mon"*|*"link show mon0"*)
+    [ "${KA_MOCK_NO_MON:-0}" = "1" ] && exit 1
+    echo "5: wlan0mon: <BROADCAST,PROMISC> mtu 1500" ;;
+  *"neigh show"*)
+    echo "192.168.99.82 lladdr 00:11:22:33:44:02 REACHABLE"
+    echo "192.168.99.22 lladdr 00:11:22:33:44:03 REACHABLE" ;;
+esac
+exit 0

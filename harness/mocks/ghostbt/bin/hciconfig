@@ -1,0 +1,6 @@
+#!/bin/sh
+# hciconfig mock: adapter exists + powers up, unless GBT_NO_ADAPTER=1.
+[ "${GBT_NO_ADAPTER:-0}" = "1" ] && exit 1
+echo "hci0:	Type: Primary  Bus: USB"
+echo "	BD Address: 00:11:22:33:44:55  UP RUNNING"
+exit 0

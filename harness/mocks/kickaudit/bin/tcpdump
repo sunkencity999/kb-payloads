@@ -1,0 +1,12 @@
+#!/bin/sh
+# Deterministic tcpdump mock for kb_kickaudit: replays $KA_MOCK_DIR/cap.txt
+# (real tcpdump-on-monitor-interface decode shapes, device-derived 2026-09-06).
+# KA_MOCK_QUIET=1 -> no frames at all (the "dead channel / silence" path).
+: "${KA_MOCK_DIR:=/tmp/ka_mock}"
+case "$*" in
+  *-e*-l*) ;;
+  *) echo "tcpdump-mock: unexpected args: $*" >&2; exit 2 ;;
+esac
+[ "${KA_MOCK_QUIET:-0}" = "1" ] && exit 0
+cat "$KA_MOCK_DIR/cap.txt" 2>/dev/null
+exit 0

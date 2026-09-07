@@ -42,5 +42,45 @@ run "quiet network" "too quiet"     GR_MOCK_DIR="$FIX/gr" GR_MOCK_QUIET=1 MOCK_D
 run "no route"      "No default route" GR_MOCK_DIR="$FIX/gr" GR_MOCK_NO_ROUTE=1 MOCK_DIR=$(mktemp -d /tmp/mock.XXXX) PATH="$GRMOCK_PATH" -- "$GR"
 run "cancel"        "cancelled by user" GR_MOCK_DIR="$FIX/gr" MOCK_DIR=$(mktemp -d /tmp/mock.XXXX) PATH="$GRMOCK_PATH" -- "$GR" --cancel-first
 
+
+echo "== kb_ghostbt =="
+GBT="$PAY/kb_ghostbt/payload.sh"
+GPATH="$HERE/mocks/ghostbt/bin:$PATH"
+: > "$FIX/gbt/calls"
+run "BLE scan"          "BLE devices"          GBT_MOCK_DIR="$FIX/gbt" MOCK_DIR=$(mktemp -d) PATH="$GPATH" -- "$GBT" --answers "LIST_PICKER=30 s"
+: > "$FIX/gbt/calls"
+run "cancel"            "cancelled by user"    GBT_MOCK_DIR="$FIX/gbt" MOCK_DIR=$(mktemp -d) PATH="$GPATH" -- "$GBT" --cancel-first
+: > "$FIX/gbt/calls"
+run "no adapter"        "no bluetooth adapter" GBT_MOCK_DIR="$FIX/gbt" GBT_NO_ADAPTER=1 MOCK_DIR=$(mktemp -d) PATH="$GPATH" -- "$GBT"
+: > "$FIX/gbt/calls"
+run "BLE silence"       "air just quiet"       GBT_MOCK_DIR="$FIX/gbtsil" MOCK_DIR=$(mktemp -d) PATH="$GPATH" -- "$GBT" --answers "LIST_PICKER=30 s"
+
+echo "== kb_kickaudit =="
+KA="$PAY/kb_kickaudit/payload.sh"
+KPATH="$HERE/mocks/kickaudit/bin:$PATH"
+run "kick patterns"     "kick patterns"        KA_MOCK_DIR="$FIX/ka" MOCK_DIR=$(mktemp -d) PATH="$KPATH" -- "$KA" --answers "LIST_PICKER=2 minutes"
+run "cancel"            "cancelled by user"    KA_MOCK_DIR="$FIX/ka" MOCK_DIR=$(mktemp -d) PATH="$KPATH" -- "$KA" --cancel-first
+run "no monitor"        "no monitor interface" KA_MOCK_DIR="$FIX/ka" KA_MOCK_NO_MON=1 MOCK_DIR=$(mktemp -d) PATH="$KPATH" -- "$KA" --answers "LIST_PICKER=2 minutes"
+run "dead channel"      "dead channel"         KA_MOCK_DIR="$FIX/ka" KA_MOCK_QUIET=1 MOCK_DIR=$(mktemp -d) PATH="$KPATH" -- "$KA" --answers "LIST_PICKER=2 minutes"
+
+echo "== kb_beacon =="
+BCN="$PAY/kb_beacon/payload.sh"
+BPATH="$HERE/mocks/beacon/bin:$PATH"
+# test-only fast copy: 2 min -> 2 s hold (logic unchanged)
+sed 's/SECS=$(( SECS \* 60 ))/SECS=$(( SECS ))/' "$BCN" > /tmp/bcn_fast.sh
+rm -rf /tmp/kb_beacon /tmp/bcn_state_t
+printf 'alias=BlueZ 5.72\ndisc=no\n' > /tmp/bcn_state_t
+run "natural end + restore" "identity restored" BCN_STATE=/tmp/bcn_state_t BCN_SLEEP_STEP=1 MOCK_DIR=$(mktemp -d) PATH="$BPATH" -- /tmp/bcn_fast.sh --answers "LIST_PICKER=Kitchen Scale\nLIST_PICKER=2 min"
+rm -f /tmp/bcn_state_c; printf 'alias=BlueZ 5.72\ndisc=no\n' > /tmp/bcn_state_c
+run "cancel keeps identity" "nothing changed"   BCN_STATE=/tmp/bcn_state_c MOCK_DIR=$(mktemp -d) PATH="$BPATH" -- "$BCN" --cancel-first
+
+echo "== kb_beacon restore-on-SIGTERM =="
+if "$HERE/test_beacon_term.sh" >/tmp/bt_out.$$ 2>&1 && grep -q "RESTORE-ON-TERM: PASS" /tmp/bt_out.$$; then
+  echo "PASS  restore-on-SIGTERM"; pass=***
+else
+  echo "FAIL  restore-on-SIGTERM"; tail -5 /tmp/bt_out.$$; fail=$((fail+1))
+fi
+rm -f /tmp/bt_out.$$ /tmp/bcn_fast.sh
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

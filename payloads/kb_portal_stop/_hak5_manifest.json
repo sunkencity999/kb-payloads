@@ -1,0 +1,1 @@
+{"payload": "kb_portal_stop", "parent": "user/interception", "key": "user~interception~kb_portal_stop", "time": "2026-09-07T00:05:00-07:00", "last_hash": "", "zip": "", "title": "KB Portal Stop", "author": "Smaug", "description": "Stop portal, revert DNS with verification, print capture summary.", "version": "1.0"}

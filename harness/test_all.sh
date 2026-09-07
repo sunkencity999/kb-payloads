@@ -82,5 +82,28 @@ else
 fi
 rm -f /tmp/bt_out.$$ /tmp/bcn_fast.sh
 
+
+echo "== kb_portal (CGI unit paths; full cycle is device-live-tested) =="
+TPL="$PAY/kb_portal_start/template/corp_gate"
+for f in login.cgi fp.cgi; do
+  if busybox ash -n "$TPL/$f" 2>/dev/null; then echo "PASS  ash -n $f"; pass=***
+  else echo "FAIL  ash -n $f"; fail=$((fail+1)); fi
+done
+PT=$(mktemp -d)
+export LOOTLOG="$PT/cap.log"
+env REQUEST_METHOD=GET QUERY_STRING="Email=a%40b.c" REMOTE_ADDR=9.9.9.9 HTTP_USER_AGENT=TestUA busybox ash "$TPL/login.cgi" >/tmp/pl_get.html 2>/dev/null
+grep -q "Guest Network Access" /tmp/pl_get.html && grep -q "qs=Email=a%40b.c" "$PT/cap.log" && { echo "PASS  GET renders + qs capture"; pass=***
+} || { echo "FAIL  GET render/qs"; fail=$((fail+1)); }
+BODY='user=z%40x.com&pass=***'
+printf '%s' "$BODY" | env REQUEST_METHOD=POST CONTENT_LENGTH=$(printf '%s' "$BODY" | wc -c) REMOTE_ADDR=9.9.9.9 HTTP_USER_AGENT=TestUA busybox ash "$TPL/login.cgi" >/tmp/pl_post.html 2>/dev/null
+grep -q "couldn&#39;t verify" /tmp/pl_post.html && grep -q "user=z%40x.com|pass=***" "$PT/cap.log" && { echo "PASS  POST capture + error loop"; pass=***
+} || { echo "FAIL  POST capture"; fail=$((fail+1)); }
+printf '{"tz":"LAX"}' | env REQUEST_METHOD=POST CONTENT_LENGTH=12 REMOTE_ADDR=9.9.9.9 busybox ash "$TPL/fp.cgi" >/dev/null 2>/dev/null
+grep -q 'FP .*{"tz":"LAX"}' "$PT/cap.log" && { echo "PASS  fp.cgi sink"; pass=***; } || { echo "FAIL  fp sink"; fail=$((fail+1)); }
+rm -rf "$PT" /tmp/pl_get.html /tmp/pl_post.html
+for d in kb_portal_install kb_portal_start kb_portal_stop; do
+  busybox ash -n "$PAY/$d/payload.sh" 2>/dev/null && { echo "PASS  ash -n $d"; pass=***; } || { echo "FAIL  ash -n $d"; fail=$((fail+1)); }
+done
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

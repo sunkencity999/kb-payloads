@@ -1,0 +1,1 @@
+{"payload": "kb_portal_install", "parent": "user/interception", "key": "user~interception~kb_portal_install", "time": "2026-09-07T00:05:00-07:00", "last_hash": "", "zip": "", "title": "KB Portal Install", "author": "Smaug", "description": "One-time portal setup: uhttpd + captive TLS cert + directories. Run once.", "version": "1.0"}

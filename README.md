@@ -10,6 +10,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB KickAudit](#kb-kickaudit)** | **zero packets** | *who keeps getting kicked off Wi-Fi, and by whom* — passive 802.11 deauth audit |
 | **[KB Hoard Hopper](#games)** | no | a roguelite text crawler (yes, a game ships with the recon) |
 | **[KB Beacon](#kb-beacon)** | BLE advertise only | BLE name chameleon with guaranteed identity restore — the one non-passive payload, and it undoes itself |
+| **[KB Portal](#kb-portal)** | serves pages on its own AP | *what does a joined client reveal* — captive credential/DNS/fingerprint capture trio on the Pager's own access point |
 
 The recon payloads run against the network the Pager is currently joined to (client mode) or the RF environment around it, append loot to `/root/loot/`, and treat user-cancel as a first-class code path. None of them exfiltrates anything: results land on the Pager's own storage and you collect them yourself.
 
@@ -185,6 +186,43 @@ All of that machinery is harness-tested, including the stubborn-stack path and a
 
 ---
 
+## KB Portal
+
+**Version 1.0 · captive portal trio (Install / Start / Stop) · scope: clients that join the Pager's own `pager-open` AP**
+
+The Flipper's "NFC tap-to-connect" fantasy made concrete: anything that joins the Pager's access point gets **all DNS resolved to the Pager** and served a login-style page. Not a brand clone — a generic, friendly "Guest Network Access" corporate sign-in page (unbranded on purpose; that's a deliberate design line, not a TODO).
+
+Three payloads, one product:
+
+- **KB Portal Install** (run once): `opkg install uhttpd` from OpenWrt repos, stop/disable the stock auto-enabled server (it steals :80 at boot otherwise), generate an **EC P-256** captive cert — RSA-2048 keygen takes *minutes* on this MIPS and hung a test session; EC is instant.
+- **KB Portal Start**: two conf-dir drop-ins into the **dynamically discovered** dnsmasq conf-dir (`conf-dir=` line in the generated config, never hardcoded): `address=/#/172.16.52.1` (wildcard capture, ~2 s to bite) + `log-queries=extra` (the passive goldmine). Launches uhttpd on :80 (+https :8443) with captive-detect probes (`generate_204`, `hotspot-detect.html`, `ncsi.txt`, `connecttest.txt`) aliased straight to the portal.
+- **KB Portal Stop**: kill server, remove **both** drops, restart dnsmasq, **verify** DNS really restored (answer-section check, not raw grep — the server's own `Address:` header made a naive check always-warn), archive both logs into `/root/loot/kb_portal/`, print counts.
+
+### What a joined device gives up (all witnessed in the live cycle test)
+
+| Channel | Captured | How |
+|---|---|---|
+| Credentials | user+pass, raw URL-encoded, with time/UA/host | POST to `login.cgi`, polite "couldn't verify" re-prompt loop |
+| Identity on arrival | e-mail in `?Email=` query strings from link previews / captive redirects | `QUERY_STRING` logged on GET — **no interaction needed** |
+| Device class | UA, screen, timezone, language, cores, touch | `fp.cgi` via same-origin inline script — zero third-party calls |
+| Every hostname it knows | full DNS query log with source IP: telemetry domains (= what's installed), search suffixes (= where it comes from) | dnsmasq `log-queries=extra` |
+| Request inventory | every hit incl. captive probes | GET lines in the capture log |
+
+### The uhttpd flag triad (each bought by a live failure — the reason this README exists)
+
+```
+-c /dev/null      bypass stock /etc/httpd.conf (silently breaks CGI execution)
+-i .cgi=/bin/sh   execute .cgi anywhere (default handler covers only /cgi-bin;
+                  aliases to a .cgi serve it RAW - never exec)
+-s 8443 -C crt -K key   split cert/key; -P is the TLS CIPHER LIST, not a pidfile
+```
+
+And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
+
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (27/27 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+
+---
+
 ## Install
 
 Copy a payload directory onto the Pager and syntax-check it in place:
@@ -215,7 +253,8 @@ cd harness && ./test_all.sh
 == kb_kickaudit ==    PASS kick patterns | cancel | no monitor | dead channel
 == kb_beacon ==       PASS natural end + restore | cancel keeps identity
                         restore-on-SIGTERM (dedicated signal test)
-== result: 19 pass, 0 fail ==
+== kb_portal ==      PASS CGI unit paths incl. qs/POST/fp capture | ash -n trio
+== result: 27 pass, 0 fail ==
 ```
 
 ### The four-path contract

@@ -105,5 +105,20 @@ for d in kb_portal_install kb_portal_start kb_portal_stop; do
   busybox ash -n "$PAY/$d/payload.sh" 2>/dev/null && { echo "PASS  ash -n $d"; pass=***; } || { echo "FAIL  ash -n $d"; fail=$((fail+1)); }
 done
 
+
+echo "== kb_tap (payload ash-parity; live cycle device-witnessed 2026-09-09) =="
+for d in kb_tap_start kb_tap_stop; do
+  busybox ash -n "$PAY/$d/payload.sh" 2>/dev/null && { echo "PASS  ash -n $d"; pass=***; } || { echo "FAIL  ash -n $d"; fail=$((fail+1)); }
+done
+# harvest-logic unit test on a fake ring (plain-text padding, no NULs: a NUL
+# written into THIS file by a python heredoc corrupted it once - 2026-09-09)
+HR=$(mktemp -d); mkdir -p "$HR/r"
+printf 'POST /login HTTP/1.1\r\nAuthorization: Basic %s\r\n\r\n' "$(printf 'unit:harbor' | base64)" > "$HR/r/ring.pcap0"
+printf 'user=me&password=s3cretunit   filler' >> "$HR/r/ring.pcap0"
+strings -n 4 "$HR/r/ring.pcap"* 2>/dev/null | grep -aiE 'authorization: (basic|ntlm)|pass(word)?=|pwd=|user(name)?=|login=' | grep -qi "password=s3cret" && { echo "PASS  harvest POST"; pass=***; } || { echo "FAIL  harvest POST"; fail=$((fail+1)); }
+B64=$(grep -aoiE 'authorization: basic [a-z0-9+/=]{8,120}' "$HR/r/ring.pcap0" | sed 's/.*[Bb]asic //' | head -1)
+[ "$(echo "$B64" | base64 -d 2>/dev/null)" = "unit:harbor" ] && { echo "PASS  basic decode"; pass=***; } || { echo "FAIL  basic decode"; fail=$((fail+1)); }
+rm -rf "$HR"
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

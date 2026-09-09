@@ -1,0 +1,1 @@
+{"payload":"kb_tap_start","parent":"user/interception","key":"user~interception~kb_tap_start","time":"2026-09-09T07:05:00-07:00","last_hash":"","zip":"","title":"KB Tap Start","author":"Smaug","description":"Passive cleartext credential tap on br-lan (ring capture + offline harvest at Stop). No injection, no TLS interception.","version":"1.0"}

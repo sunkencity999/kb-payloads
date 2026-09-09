@@ -11,6 +11,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB Hoard Hopper](#games)** | no | a roguelite text crawler (yes, a game ships with the recon) |
 | **[KB Beacon](#kb-beacon)** | BLE advertise only | BLE name chameleon with guaranteed identity restore — the one non-passive payload, and it undoes itself |
 | **[KB Portal](#kb-portal)** | serves pages on its own AP | *what does a joined client reveal* — captive credential/DNS/fingerprint capture trio on the Pager's own access point |
+| **[KB Tap](#kb-tap)** | passive pcap ring | *what do clients send unprotected* — cleartext credential harvest (HTTP POST/GET, Basic, FTP/telnet/mail AUTH) from the wire, with Start/Stop markers and offline extraction |
 
 The recon payloads run against the network the Pager is currently joined to (client mode) or the RF environment around it, append loot to `/root/loot/`, and treat user-cancel as a first-class code path. None of them exfiltrates anything: results land on the Pager's own storage and you collect them yourself.
 
@@ -219,7 +220,24 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (27/27 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (31/31 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+
+---
+
+## KB Tap
+
+**Version 1.0 · passive cleartext-credential capture (Start / Stop) · zero-stock-image footprint: tcpdump, strings, base64, sha256sum all ship in the Flipper image**
+
+The portal asks; the tap simply listens. `tcpdump -i br-lan -s0 -C 3 -W 8` writes a self-rotating 24 MB pcap ring into `/tmp` (tmpfs — rotation file naming `ring.pcap0..7` verified on device), and **extraction happens offline at Stop**, not with live grep pipelines: kill capture, `strings -n 4` the ring, grep for cleartext credential shapes (HTTP `POST` bodies with `pass=`/`user=`/`login=`, `Authorization: Basic/NTLM`, FTP/telnet `USER/PASS`, mail `AUTH LOGIN`), then **decode any Basic blobs found** (base64 ships in the image) into `user:pass` lines. Harvest gets a sha256 manifest; raw ring is archived into `/root/loot/kbtap/rings-<stamp>/` only when overlay headroom allows (>30 MB gate) — otherwise you're told to pull it over ssh before reboot.
+
+Design properties, same discipline as the rest of the suite:
+
+- **Marker + self-heal**: `Stop` without `Start` sweeps stray tcpdumps; `Start` on a crashed run harvests the dead ring before wiping it
+- **No stacking**: refuses to start if any tcpdump already runs (one capture, one marker, no double-tap ambiguity)
+- **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
+- **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
+
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 31/31.
 
 ---
 
@@ -254,7 +272,8 @@ cd harness && ./test_all.sh
 == kb_beacon ==       PASS natural end + restore | cancel keeps identity
                         restore-on-SIGTERM (dedicated signal test)
 == kb_portal ==      PASS CGI unit paths incl. qs/POST/fp capture | ash -n trio
-== result: 27 pass, 0 fail ==
+== kb_tap ==         PASS ash -n pair | harvest POST | basic decode
+== result: 31 pass, 0 fail ==
 ```
 
 ### The four-path contract

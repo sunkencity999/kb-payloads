@@ -1,0 +1,1 @@
+{"payload":"kb_tap_stop","parent":"user/interception","key":"user~interception~kb_tap_stop","time":"2026-09-09T07:05:00-07:00","last_hash":"","zip":"","title":"KB Tap Stop","author":"Smaug","description":"Stop tap, harvest ring, decode Basic auth, archive with sha256 manifest, print counts.","version":"1.0"}

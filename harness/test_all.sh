@@ -151,5 +151,18 @@ echo "$KBNC" | grep -qF 'query\[' && { echo "PASS  verbose query[ format in code
 rm -rf "$KQ"
 
 
+echo "== kb_loot (rig-side collector: local-mode pipeline + BAD-path exit code; live ssh pull device-witnessed 2026-09-09) =="
+bash -n tools/kb_loot.sh 2>/dev/null && { echo "PASS  bash -n kb_loot"; pass=***; } || { echo "FAIL  bash -n kb_loot"; fail=$((fail+1)); }
+KL=$(mktemp -d); KLD="$KL/dev"; mkdir -p "$KLD/sub"
+printf 'alpha loot\n' > "$KLD/a.txt"; printf 'beta loot\n' > "$KLD/sub/b.txt"
+./tools/kb_loot.sh --local "$KLD" -o "$KL/out" >/dev/null 2>&1
+[ $? -eq 0 ] && [ "$(grep -c . "$KL/out/collected.sha256")" = "2" ] && { echo "PASS  fresh collect: 2 ledgered"; pass=***; } || { echo "FAIL  fresh collect"; fail=$((fail+1)); }
+./tools/kb_loot.sh --local "$KLD" -o "$KL/out" 2>&1 | grep -q "new-to-ledger: 0   dupes (already collected): 2" && { echo "PASS  rerun dedupes to ledger"; pass=***; } || { echo "FAIL  dedupe"; fail=$((fail+1)); }
+printf '0000000000000000000000000000000000000000000000000000000000000000 ./a.txt\n' > "$KL/fake.man"
+KB_LOOT_FAKE_MANIFEST="$KL/fake.man" ./tools/kb_loot.sh --local "$KLD" -o "$KL/out" >/dev/null 2>&1; RC=$?
+[ $RC -eq 2 ] && { echo "PASS  corrupt manifest -> exit 2 (do-not-trust)"; pass=***; } || { echo "FAIL  BAD path rc=$RC"; fail=$((fail+1)); }
+rm -rf "$KL"
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

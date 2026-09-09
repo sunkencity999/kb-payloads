@@ -15,6 +15,45 @@
 #   fresh vifs - device-proven), no TX beyond serving pages.
 
 LOG green "KB Portal Start v1.0"
+canary_ans(){ nslookup "$1" 127.0.0.1 2>/dev/null | awk '/^Name:/{f=1} f&&/^Address:/{print $2; exit}'; }
+manual_respawn(){ # last-resort bring-up straight from the generated conf, bypassing
+  local GEN
+  GEN=$(ls -t /var/etc/dnsmasq.conf.cfg* 2>/dev/null | head -1)
+  [ -f "$GEN" ] || return 1
+  kill $(pidof dnsmasq) 2>/dev/null; sleep 1
+  nohup /usr/sbin/dnsmasq -C "$GEN" -k >/tmp/dnsmasq_manual.log 2>&1 &
+  sleep 2
+  pidof dnsmasq >/dev/null
+}
+restart_dnsmasq(){ # kill ALL instances, wait gone, init start; on procd crash-loop
+  # backoff (witnessed 2026-09-09: rapid Start/Stop test cycles push procd into
+  # "12 crashes" cooldown and start becomes a no-op) wait once, then manual respawn.
+  local i
+  kill $(pidof dnsmasq) 2>/dev/null
+  i=0
+  while [ $i -lt 8 ]; do pidof dnsmasq >/dev/null || break; sleep 1; i=$((i+1)); done
+  pidof dnsmasq >/dev/null || "$DNSINIT" start >/dev/null 2>&1
+  i=0
+  while [ $i -lt 12 ]; do pidof dnsmasq >/dev/null && return 0; sleep 1; i=$((i+1)); done
+  sleep 25
+  "$DNSINIT" start >/dev/null 2>&1
+  i=0
+  while [ $i -lt 10 ]; do pidof dnsmasq >/dev/null && return 0; sleep 1; i=$((i+1)); done
+  manual_respawn
+}
+reload_dnsmasq(){ # restart + PROVE conf-dir drops loaded: canary $1 answers $IP.
+  # Outcome-verified: pid comparison lies on this box (procd respawn races, init
+  # restart sometimes no-ops - all failure modes witnessed 2026-09-09).
+  local i
+  restart_dnsmasq || return 1
+  [ -n "$1" ] || return 0
+  i=0
+  while [ $i -lt 8 ]; do
+    [ "$(canary_ans "$1")" = "$IP" ] && return 0
+    sleep 1; i=$((i+1))
+  done
+  return 1
+}
 
 STATE=${KBP_STATE:-/root/loot/kb_portal}
 ROOTP=${KBP_ROOT:-/root/portals}
@@ -35,7 +74,7 @@ if [ -f "$MARKER" ]; then
   if [ -n "$OLD_DROP" ] && [ -f "$OLD_DROP" ]; then rm -f "$OLD_DROP"; fi
   [ -n "$OLD_DROPQ" ] && rm -f "$OLD_DROPQ"
   [ -f "$OLD_DROP" ] || [ -f "$OLD_DROPQ" ] || true
-  "$DNSINIT" restart >/dev/null 2>&1
+  restart_dnsmasq
   rm -f "$MARKER"
 fi
 
@@ -77,6 +116,8 @@ PICK=$(LIST_PICKER "Portal template" "corp_gate" "Leave") || { LOG red "cancelle
 [ -d "$ROOTP/$PICK" ] || { LOG red "template $PICK not installed - run KB Portal Install"; ALERT "No template"; exit 0; }
 
 LOG cyan "wildcard DNS: * -> $IP (~2s to take effect)"
+CANARY="kbpcanary-$$"
+CANFILE="$CONFDIR/kbp_canary.conf"
 DROP="$CONFDIR/kbportal.conf"
 DROPQ="$CONFDIR/kbportal_qlog.conf"
 echo "address=/#/$IP" > "$DROP" || { LOG red "cannot write drop into $CONFDIR"; ALERT "Drop failed"; exit 0; }
@@ -89,7 +130,16 @@ touch /tmp/kbportal_dns.log; chmod 666 /tmp/kbportal_dns.log 2>/dev/null
 touch /tmp/kbportal_capture.log; chmod 666 /tmp/kbportal_capture.log 2>/dev/null
 chmod 777 "$STATE" 2>/dev/null
 printf 'log-queries=extra\nlog-facility=/tmp/kbportal_dns.log\nlog-dhcp\n' > "$DROPQ" 2>/dev/null || LOG yellow "qlog drop failed - continuing without DNS logging"
-"$DNSINIT" restart >/dev/null 2>&1
+# canary proves conf-dir drops loaded on the FRESH instance before we claim
+# LIVE (init restart races - witnessed 2026-09-09: old pid sometimes survives the
+# restart and drops stay dead; SIGHUP reloads hosts/ethers only, NOT conf-dir)
+printf "address=/$CANARY/$IP\n" > "$CANFILE"
+if ! reload_dnsmasq "$CANARY"; then
+  LOG red "dnsmasq restart failed - reverting drops"; rm -f "$DROP"  "$DROPQ" "$CANFILE"; "$DNSINIT" start >/dev/null 2>&1
+  ALERT "DNS reload failed"; exit 0
+fi
+rm -f "$CANFILE"
+LOG green "canary verified: conf-dir drops ACTIVE on pid $(pidof dnsmasq | awk '{print $1}')"
 
 TLSOPT=""; TLSLOG=""
 if [ -f "$ROOTP/kb_portal.crt" ] && [ -f "$ROOTP/kb_portal.key" ]; then
@@ -119,7 +169,7 @@ sleep 1
 PID=$(pidof uhttpd 2>/dev/null | awk '{print $1}')
 [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null || {
   LOG red "uhttpd died on launch - reverting DNS"
-  rm -f "$DROP" "$DROPQ"; "$DNSINIT" restart >/dev/null 2>&1
+  rm -f "$DROP" "$DROPQ"; restart_dnsmasq
   ALERT "Launch failed"
   exit 0
 }
@@ -127,6 +177,7 @@ PID=$(pidof uhttpd 2>/dev/null | awk '{print $1}')
 echo "PID=$PID
 DROP=$DROP
 DROPQ=$DROPQ
+CANARY=$CANARY
 TPL=$PICK
 IP=$IP
 TS=$(date -u +%FT%TZ)" > "$MARKER"

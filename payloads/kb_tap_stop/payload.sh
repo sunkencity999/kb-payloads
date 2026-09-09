@@ -39,8 +39,8 @@ grep -aoiE 'authorization: basic [a-z0-9+/=]{8,120}' "$RING"/ring.pcap* 2>/dev/n
       printf 'BASIC-decoded: ' ; echo "$B64" | base64 -d 2>/dev/null; echo
   done >> "$HARV" 2>/dev/null
 
-LINES=$(grep -c . "$HARV" 2>/dev/null || echo 0)
-DECODED=$(grep -c "BASIC-decoded" "$HARV" 2>/dev/null || echo 0)
+LINES=$(grep -c . "$HARV" 2>/dev/null); LINES=${LINES:-0}
+DECODED=$(grep -c "BASIC-decoded" "$HARV" 2>/dev/null); DECODED=${DECODED:-0}
 sha256sum "$HARV" > "$HARV.sha256" 2>/dev/null
 
 # keep raw pcaps only if overlay can hold them without endangering the system

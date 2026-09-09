@@ -12,6 +12,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB Beacon](#kb-beacon)** | BLE advertise only | BLE name chameleon with guaranteed identity restore — the one non-passive payload, and it undoes itself |
 | **[KB Portal](#kb-portal)** | serves pages on its own AP | *what does a joined client reveal* — captive credential/DNS/fingerprint capture trio on the Pager's own access point |
 | **[KB Tap](#kb-tap)** | passive pcap ring | *what do clients send unprotected* — cleartext credential harvest (HTTP POST/GET, Basic, FTP/telnet/mail AUTH) from the wire, with Start/Stop markers and offline extraction |
+| **[KB Hijack](#kb-hijack)** | targeted DNS hijack + re-auth pages | *where would they actually type passwords* — operator-listed hostnames answered by the Pager, served an unbranded session-expired page that logs the intended target with every hit |
 
 The recon payloads run against the network the Pager is currently joined to (client mode) or the RF environment around it, append loot to `/root/loot/`, and treat user-cancel as a first-class code path. None of them exfiltrates anything: results land on the Pager's own storage and you collect them yourself.
 
@@ -220,7 +221,7 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (31/31 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (39/39 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
@@ -237,7 +238,29 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 31/31.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 39/39.
+
+---
+
+## KB Hijack
+
+**Version 1.0 · targeted DNS hijack pair (Start / Stop) · the escalation layer on the same device-proven mechanics as KB Portal**
+
+Portal captures *everyone* with one generic page. Hijack answers **only the hostnames the operator lists** — `/root/portals/hijack_targets.txt`, one per line, validated shape, hard cap of 25 — each resolving to the Pager, served a clean, unbranded **"session expired — sign in to continue to `$HOST`"** page. The intended target *is* the lure: the page header, the button text, and the capture line all carry it (`tgt=hijackproof.test`), so the report reads "who tried to reach what, and what did they type for it." No logo cloning, no vendor impersonation — the standing design line holds; the operator's own target list supplies the context.
+
+Capture record per hit: `GET`/`POST | timestamp | tgt | source IP | UA | user/pass (URL-encoded, field-variant tolerant) | referrer | raw-body fallback`. Parser accepts `user|username|email|login|account` × `pass|password|pwd|pin`, and **when no known field name matches, the full raw body is logged anyway** — a nonstandard form loses nothing. Stop removes the drop, restarts dnsmasq, **verifies the first hijacked name resolves for real again**, archives the capture with sha256, prints `N hits / M credential POSTs / K distinct targets`, and sweeps stray drops/canaries even with no marker present.
+
+### The canary rule (this payload's real gift to the whole suite)
+
+Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a throwaway hostname (`kbpcanary-$$`) is deployed *with* the real drops, dnsmasq restarted, and the canary must actually resolve to the Pager or the payload reverts everything and refuses to run. This exists because three failure modes were witnessed on one device in one morning:
+
+1. **`printf 'address=/$CANARY/$IP\n'`** — single quotes suppress expansion; the drop file contained the literal `$CANARY`. The *real* root cause of the first failed live cycles, found by `sh -x` xtrace after two wrong theories (dnsmasq timing, procd races).
+2. **pid comparison lies** — procd respawn races mean "new pid" neither happens reliably nor means anything. The only truth is a canary query.
+3. **procd crash-loop backoff** — rapid Start/Stop test cycles pushed dnsmasq into a "12 crashes" cooldown where `init.d start` became a no-op. The payload now escalates: procd start → wait → one cooldown retry → `manual_respawn` (bring dnsmasq up directly from the generated conf, bypassing the supervisor), and KB Portal inherited the same hardening.
+
+**Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
+
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 39/39 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -273,7 +296,9 @@ cd harness && ./test_all.sh
                         restore-on-SIGTERM (dedicated signal test)
 == kb_portal ==      PASS CGI unit paths incl. qs/POST/fp capture | ash -n trio
 == kb_tap ==         PASS ash -n pair | harvest POST | basic decode
-== result: 31 pass, 0 fail ==
+== kb_hijack ==      PASS ash -n pair | CGI target-context + variant parsing |
+                     raw fallback
+== result: 39 pass, 0 fail ==
 ```
 
 ### The four-path contract

@@ -1,0 +1,1 @@
+{"payload":"kb_hijack_stop","parent":"user/interception","key":"user~interception~kb_hijack_stop","time":"2026-09-09T07:15:00-07:00","last_hash":"","zip":"","title":"KB Hijack Stop","author":"Smaug","description":"Stop hijack, remove targeted drop, verify hijacked names resolve for real, archive capture + counts.","version":"1.0"}

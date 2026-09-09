@@ -6,6 +6,46 @@
 # Version: 1.0
 
 LOG green "KB Portal Stop v1.0"
+DNSINIT=${DNSINIT:-/etc/init.d/dnsmasq.hak5}
+canary_ans(){ nslookup "$1" 127.0.0.1 2>/dev/null | awk '/^Name:/{f=1} f&&/^Address:/{print $2; exit}'; }
+manual_respawn(){ # last-resort bring-up straight from the generated conf, bypassing
+  local GEN
+  GEN=$(ls -t /var/etc/dnsmasq.conf.cfg* 2>/dev/null | head -1)
+  [ -f "$GEN" ] || return 1
+  kill $(pidof dnsmasq) 2>/dev/null; sleep 1
+  nohup /usr/sbin/dnsmasq -C "$GEN" -k >/tmp/dnsmasq_manual.log 2>&1 &
+  sleep 2
+  pidof dnsmasq >/dev/null
+}
+restart_dnsmasq(){ # kill ALL instances, wait gone, init start; on procd crash-loop
+  # backoff (witnessed 2026-09-09: rapid Start/Stop test cycles push procd into
+  # "12 crashes" cooldown and start becomes a no-op) wait once, then manual respawn.
+  local i
+  kill $(pidof dnsmasq) 2>/dev/null
+  i=0
+  while [ $i -lt 8 ]; do pidof dnsmasq >/dev/null || break; sleep 1; i=$((i+1)); done
+  pidof dnsmasq >/dev/null || "$DNSINIT" start >/dev/null 2>&1
+  i=0
+  while [ $i -lt 12 ]; do pidof dnsmasq >/dev/null && return 0; sleep 1; i=$((i+1)); done
+  sleep 25
+  "$DNSINIT" start >/dev/null 2>&1
+  i=0
+  while [ $i -lt 10 ]; do pidof dnsmasq >/dev/null && return 0; sleep 1; i=$((i+1)); done
+  manual_respawn
+}
+reload_dnsmasq(){ # restart + PROVE conf-dir drops loaded: canary $1 answers $IP.
+  # Outcome-verified: pid comparison lies on this box (procd respawn races, init
+  # restart sometimes no-ops - all failure modes witnessed 2026-09-09).
+  local i
+  restart_dnsmasq || return 1
+  [ -n "$1" ] || return 0
+  i=0
+  while [ $i -lt 8 ]; do
+    [ "$(canary_ans "$1")" = "$IP" ] && return 0
+    sleep 1; i=$((i+1))
+  done
+  return 1
+}
 STATE=${KBP_STATE:-/root/loot/kb_portal}
 MARKER="$STATE/active"
 
@@ -15,8 +55,8 @@ if [ ! -f "$MARKER" ]; then
   LOG yellow "no active portal marker - sweeping for stray drops anyway"
   CDDIR=$(grep -m1 '^conf-dir=' $GENCONF 2>/dev/null | head -1 | cut -d= -f2)
   if [ -n "$CDDIR" ] && ls "$CDDIR"/kbportal*.conf >/dev/null 2>&1; then
-    rm -f "$CDDIR"/kbportal*.conf
-    "$DNSINIT" restart >/dev/null 2>&1
+    rm -f "$CDDIR"/kbportal*.conf "$CDDIR"/kbp_canary.conf
+    restart_dnsmasq
     LOG green "stray kbportal drops removed, dnsmasq restarted"
     ALERT "Strays cleaned"
     exit 0
@@ -44,8 +84,8 @@ DNSINIT=${KBP_DNSINIT:-/etc/init.d/dnsmasq.hak5}
 DROPQ=$(sed -n 's/^DROPQ=//p' "$MARKER" | head -1)
 [ -n "$DROPQ" ] && rm -f "$DROPQ"
 if [ -n "$DROP" ] && [ -f "$DROP" ]; then
-  rm -f "$DROP"
-  "$DNSINIT" restart >/dev/null 2>&1
+  rm -f "$DROP" "$(dirname "$DROP")/kbp_canary.conf" 2>/dev/null
+  restart_dnsmasq
   LOG green "DNS drop removed + dnsmasq restarted"
   # verify real DNS returns: a .invalid name must give NXDOMAIN, not the portal IP
   PORTAL_IP=$(sed -n 's/^IP=//p' "$MARKER" | head -1)

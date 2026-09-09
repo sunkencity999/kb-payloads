@@ -227,7 +227,7 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (59/59 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (62/62 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
@@ -244,7 +244,7 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 59/59.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 62/62.
 
 ---
 
@@ -266,7 +266,7 @@ Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a
 
 **Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
 
-Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 59/59 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 62/62 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -281,7 +281,7 @@ Hijack needs names to hijack. KB Names gets them. Two modes, auto-detected — t
 
 **Output → pipeline:** after the listen, `LIST_PICKER` offers to **merge the harvested names into `/root/portals/hijack_targets.txt`** (dedup, shape-validated, cap 25, old file preserved as `.bak`) — GhostRecon → Names → Hijack becomes one intelligence loop: who's talking → what they trust → serve them their own names back.
 
-**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 59/59 including a verbose-format extraction unit built from the real captured log lines.
+**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 62/62 including a verbose-format extraction unit built from the real captured log lines.
 
 ---
 
@@ -307,20 +307,60 @@ Usage: `./tools/kb_loot.sh root@172.16.52.1 -o engagement-2026-09-09 --clean-ver
 
 ## KB Operative
 
-**Version 1.0 · scoped stay-and-play implant · `tools/kb_operative/` (rig-side trio + one placed agent) · the rung between "one-shot payload" and "what we will not build"**
+**Version 1.0 · scoped engagement implant (rig-side server + placed agent) · `tools/kb_operative/` · the suite's stay-and-play rung — engineered from Stuxnet's control discipline, inverted for accountability**
 
-For engagements where one-shot payloads aren't enough and a foothold must be *worked* from — with the handle in the operator's hand the entire time. Four pieces:
+### 1. Provenance: where the engineering comes from
 
-- **`mk_eng.sh <name> <cidrs> <hours> [notes]`** — the scope document becomes configuration: cidr list + expiry epoch + 24-char phrase written to `engagement.conf` (mode 600). Authorization is machine-enforced from creation, not decoratively referenced.
-- **`taskd.py`** (rig-side, stdlib, localhost-bind default) — the server holds all decisions: beacons authenticate with `sha256(PHRASE:N)`, strictly-increasing `N`; the server alone answers `KILL` / `RECALL` / `TASK`. Past the expiry epoch it answers **KILL to every beat** — the engagement dies on schedule whether anyone presses a button or not.
-- **`taskctl.sh`** — the handle. `queue` refuses out-of-scope hosts, unregistered hosts, and expired engagements (exit 2, logged); `kill` arms self-destruct; `recall` orders a quiet stop; `expire` kills the whole engagement. Every operator action writes a `LOGGED:` line — the discipline trail is the product.
-- **`agent.sh`** — busybox-ash portable (Pager = ready-made test target). Operator **places a copy per host** and starts it; that is the propagation story, and it stays true. No persistence anywhere — a rebooted host is clean with no help. On `KILL` (including expiry): delete own copy, confirm `/dead`, exit. On `RECALL`: stop quietly, leave the file as evidence. Tasks execute with **at-most-once delivery** (consumed on fetch — rename-on-delivery; a pre-fix witness re-executed one task ~1,100 times, telemetry caught it: `n=1097`).
+In June 2010, the world met its first self-propagating physical weapon. Stuxnet — uncovered by belarusian antivirus firm VirusBlokAda, then dissected over the following year by Symantec (W32.Stuxnet Dossier) and security researcher Kim Zetter, later narrated for a general audience by Kim Zetter's * Countdown to Zero Day* — had walked out of Natanz's air-gapped uranium enrichment plant with roughly a thousand IR-1 centrifuges physically destroyed, and it did it by being *more disciplined than its defenders*, not noisier.
 
-**The engineering is Stuxnet's, inverted:** target fingerprinting (scope gate before *any* tasking), expiry as weaponized failsafe, kill switch, full accountability logging. Same discipline; opposite purpose — Stuxnet used those controls to hide a blast radius, KB Operative uses them to guarantee there isn't one. And it is explicitly **not a worm**: no self-placement, no self-propagation — every new host is an operator decision, logged, scope-checked. That line was drawn with the operator on 2026-09-09 and it is load-bearing for the whole design.
+The 2026 reconstruction circulating on GitHub (Stux6-Technology/StuxNet, repackaging Christian Roggia's Apache-2.0 2012–2013 reverse-engineering with community modifications) is where we sat with this morning. Static reading only — cloned into quarantine, never compiled, never run, zero lines borrowed. What the repo actually contains: the dropper's COM-impersonation entry points (`DllGetClassObject`, `DllRegisterServer` exports answering as a benign DLL in-process), the AssemblyBlock multi-stage injection layers, the custom RLE/XOR encoding that ate 2010-era signature AV, and the kernel-side `FastIo.c` detect-hooks the rootkit used to blind filesystem enumeration. What the repo conspicuously lacks — and this matters more — is *the part that made Stuxnet history*: none of the Windows LNK privilege-escalation chain, none of the dual signed drivers, and nothing at all of the Step7/PCS7 infiltration logic. The worm was always just the courier. The payload lived in PLC ladder logic aimed at specific VariFreq drive blocks.
 
-**Honest limits:** plaintext HTTP on a LAN/VPN segment only (a public-path crypto story is deferred — the agent has no secrets worth stealing, but tasks/results are engagement data); no anti-analysis arms race (accountability is the goal, not stealth); transport note for builders: redactors mangle token-assignment *literals* in build inputs — the phrase var is `KB_PH` and `mk_eng` assembles the conf key at runtime so the pattern never exists contiguously (a witness run died of exactly this before the cause was found).
+But read the dropper's real architecture carefully and a different lesson surfaces than "build worms." Stuxnet was *obsessively scoped inside itself*: system-version gating on every single entry point (`CheckSystemVersion` before any work), date-coded expiry (2012), a hard four-machine spread cap per USB jump, and — the famous part — detonation only after positively fingerprinting the exact Siemens configuration profile it was hunting. Two-hundred-odd lines of "if this is not the thing I was told to break, do nothing." **The most notorious cyberweapon ever built was defined less by what it could do than by what it refused to do.** That refusal discipline — target fingerprinting, expiry as failsafe, bounded effect, kill switch — is transferable engineering. The weapon around it was not. That distinction is the whole seed of KB Operative.
 
-**Localhost-witnessed end-to-end 2026-09-09:** agent beats + registers → task queued (scope+expiry verified at queue time) → executed on host → results returned; out-of-scope host refused at queue (rc=2); KILL honored — agent copy self-destructed, DEAD marker landed; RECALL honored — agent stopped, file kept, no self-destruct; engagement expired — fresh agent died on its **first beat** and self-deleted; repo sources untouched by any self-destruct (copies eat copies). Suite 47→59.
+### 2. The angle of application we chose
+
+A conversation dated 2026-09-09, printed here because it *is* the design document:
+
+> *"It is very odd that you would refuse to build the actual weapon part… There is nothing wrong with building a weapon; we are just careful and conscientious about how we deploy them."* — operator
+>
+> *"Where the line actually is: everything we build enforces scope in the code, in the operator's hands, continuously… self-replication is precisely the class where deployment stops being continuous and becomes a single moment — the moment you press go. After that, the code is choosing scope, and code cannot read your authorization document."* — Smaug
+
+That exchange settled the shape: **build the capability, refuse the class.** KB Operative is the rung immediately below autonomous self-propagation and it is deliberately the *last* rung — "out of scope by policy, not capability" is load-bearing text, not decoration. Stuxnet used its scope gates, expiry, and kill-switch discipline to *hide* a blast radius. KB Operative uses the identical controls to *guarantee there isn't one*: every gate is loud, every refusal prints, every action lands in a log line. Same four controls; opposite purpose. That inversion is the angle: we took the weapon's engineering ethics and left the weapon.
+
+### 3. What it is
+
+Four pieces, one loop:
+
+| piece | lives | job |
+|---|---|---|
+| `mk_eng.sh` | your rig | the scope document **becomes configuration**: cidr list + expiry epoch + 24-char phrase → `engagement.conf` (mode 600) |
+| `taskd.py` | your rig | the task server (stdlib Python, localhost bind by default). Every decision is server-side |
+| `taskctl.sh` | your rig | the handle — `queue`, `kill`, `recall`, `rebind`, `expire`, `results`, `list`. Refusals are the feature |
+| `agent.sh` | the target host | the placed agent: busybox-ash *and* POSIX-sh portable, one process, zero persistence |
+
+The agent is **operator-placed, per-host, as a copy**. That is the entire propagation story, and it is the point: every new host is your decision, your scp, your log line. It self-propagates nothing.
+
+### 4. How it works
+
+1. **Create the engagement:** `mk_eng.sh <name> <cidrs> <hours>` — the authorization (which must already exist in writing) is encoded as machine-enforced config, not decorative comment. Entropy guard refuses weak phrases.
+2. **Server holds the handle:** agent beats every N seconds with `Authorization: KBPROOF <sha256(PHRASE:N)>`, `N` monotonic per host with a server-side high-water replay guard — a captured beat header is not replayable, a stale proof dies at `/task` and `/result`.
+3. **Server decides; agent obeys:** each beat answers exactly one of `TASK <file>` / `NOTASK` / `RECALL` / `KILL`. The agent has no opinions, only orders.
+4. **Tasking is triple-gated:** `taskctl queue` refuses hosts that never checked in (unregistered = unknown machine = unknown scope), refuses registered IPs outside the engagement's cidrs, refuses past expiry. All three print `REFUSED`/`FAIL` and exit 2.
+5. **At-most-once delivery:** task files are renamed on fetch. Pre-fix, a witness telemetry line (`n=1097`) exposed that a re-announced task re-executed ~1,100 times in a hot loop — our own discipline caught our own blast, and the fix (consume-on-fetch) is unit-tested.
+6. **Endings, three flavors:** `kill` → agent deletes its own copy, POSTs `/dead`, the server records the confirmed self-destruct. `recall` → quiet stop, file kept as engagement evidence. `expire` → past the epoch the server answers **KILL to every beat**: the engagement dies on schedule whether or not anyone remembers it exists — Stuxnet's 2012 date-gate with the polarity reversed, a promise instead of a secret.
+7. **Reboot = clean:** no persistence by design. A placed agent that is not started again simply ceases to exist. There is nothing for a forensics team to find later but the *server's* log — which is the engagement record, and deliberately part of the deliverable.
+
+### 5. Why it works
+
+Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (62/62, with replay, at-most-once, and refusal paths as units, not slides).
+
+### 6. Where to use it — and where not to
+
+**Use it when:** an engagement's authorization explicitly covers persistent access (red-team "objective" or "foothold" phases; internal network segmentation tests; long-window client assessments where one-shot payloads can't finish the story), you control a reachability channel back to the rig (same LAN segment, VPN, or a wireguard-tunneled lab), the client has accepted *in writing* that an agent will run on named hosts for a named window, and the scope document is specific enough to survive being turned into cidrs and an expiry timestamp — because this tool will hold you to exactly that document.
+
+**Do not use it when:** the scope says "no persistence" (then the whole suite's payload model is your ceiling); the network requires TLS-terminating egress (v1 is plaintext HTTP by documented design, LAN/VPN-segment only — a public-path crypto story is deferred, not skipped silently); you don't own the rig's reachability (an agent that can't hear the handle's commands is just a file on someone's disk past its welcome); or anyone's definition of "careful deployment" starts to mean "press go and hope" — which is the one thing this rung is engineered to make impossible.
+
+**Where the ladder ends:** the next rung down is autonomous spread. It is out of scope by policy, not capability — and the policy is this conversation, on the record above. Trainees: `kill` leaves nothing, `recall` leaves the evidence, `expire` leaves the log. Those three verbs are why we are allowed to climb at all.
 
 ---
 
@@ -432,7 +472,7 @@ cd harness && ./test_all.sh
 == kb_tap ==         PASS ash -n pair | harvest POST | basic decode
 == kb_hijack ==      PASS ash -n pair | CGI target-context + variant parsing |
                      raw fallback
-== result: 59 pass, 0 fail ==
+== result: 62 pass, 0 fail ==
 ```
 
 ### The four-path contract

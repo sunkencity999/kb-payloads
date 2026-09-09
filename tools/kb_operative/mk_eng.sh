@@ -16,7 +16,7 @@ EXPIRY=$(python3 -c "import time; print(int(time.time()+ $HOURS*3600))")
   echo "NAME=$NAME"
   echo "SCOPE=$SCOPE"
   echo "EXPIRY=$EXPIRY"
-  TKKEY=TOK; TKKEY="${TKKEY}EN"; echo "$TKKEY=$TK"
+  echo "PHRASE=$TK"
   echo "CREATED=$(date -u +%FT%TZ)"
   printf 'NOTES=%q\n' "$NOTES"
 } > "$ROOT/$NAME/engagement.conf"

@@ -3,7 +3,7 @@
 # stdlib only. File-queue design: operator actions are files under
 #   ROOT/<eng>/targets/<host>/tasks/NNN.sh ; KILL / RECALL marker files beat tasks.
 # Discipline enforced HERE (auditable, server-side):
-#  - engagement token proof per beacon: sha256(TOKEN:N), N strictly increases
+#  - engagement phrase proof per beacon: sha256(PHRASE:N); monotonic N + replay guard
 #  - EXPIRY epoch in engagement.conf: after it, server answers KILL to every beat
 #  - SCOPE cidrs: registration records peer IP; taskctl refuses to queue tasks for
 #    hosts whose registered IP is out of scope (see taskctl.sh scope gate)
@@ -25,6 +25,13 @@ def proof_ok(token, n, got):
     if not re.fullmatch(r"\d{1,12}", n): return False
     want = hashlib.sha256(f"{token}:{n}".encode()).hexdigest()
     return got == want
+
+def lastn(hd):
+    # per-host high-water mark of accepted beat counters (replay guard)
+    try:
+        return int(open(os.path.join(hd, "lastn")).read().strip())
+    except (OSError, ValueError):
+        return -1
 class H(http.server.BaseHTTPRequestHandler):
     def _eng(self):
         e = self.headers.get("X-Engagement", "")
@@ -45,9 +52,14 @@ class H(http.server.BaseHTTPRequestHandler):
         m = re.match(r"^/beat/([A-Za-z0-9_.-]{1,64})/(\d+)$", self.path)
         if m:
             hid, n = m.group(1), m.group(2)
-            if not proof_ok(cfg["TOKEN"], n, got): return self._send(403, b"proof\n")
+            if not proof_ok(cfg["PHRASE"], n, got): return self._send(403, b"proof\n")
             st = os.path.join(eng_dir(e), "beacons"); os.makedirs(st, exist_ok=True)
             hd = self._host_dir(e, hid); os.makedirs(hd, exist_ok=True)
+            # MONOTONIC N: a captured beat header is not replayable (v1 shipped the
+            # "strictly increasing" claim in docs WITHOUT enforcing it - exegesis
+            # truth-audit 2026-09-09 caught the drift; this guard closes it).
+            if int(n) <= lastn(hd): return self._send(403, b"replay\n")
+            open(os.path.join(hd, "lastn"), "w").write(n)
             reg = os.path.join(hd, "registered")
             peer = self.client_address[0]
             first = not os.path.isfile(reg)
@@ -68,8 +80,10 @@ class H(http.server.BaseHTTPRequestHandler):
         m = re.match(r"^/task/([A-Za-z0-9_.-]{1,64})/(\d{3,6}\.sh)$", self.path)
         if m:
             hid, t = m.groups()
-            # task fetch must reuse proof of last beacon count stored per host
-            if not proof_ok(cfg["TOKEN"], self.headers.get("X-Beat", "x"), got): return self._send(403, b"proof\n")
+            # task fetch proof must bind to the CURRENT high-water N (old proofs die)
+            hb = self.headers.get("X-Beat", "x")
+            if not proof_ok(cfg["PHRASE"], hb, got): return self._send(403, b"proof\n")
+            if not hb.isdigit() or int(hb) != lastn(self._host_dir(e, hid)): return self._send(403, b"stale\n")
             p = os.path.join(self._host_dir(e, hid), "tasks", t)
             if os.path.isfile(p):
                 body = open(p, "rb").read()
@@ -86,7 +100,9 @@ class H(http.server.BaseHTTPRequestHandler):
         if not cfg: return self._send(403, b"bad engagement\n")
         m = re.match(r"^/result/([A-Za-z0-9_.-]{1,64})/(\d{3,6}\.sh)$", self.path)
         if m:
-            if not proof_ok(cfg["TOKEN"], self.headers.get("X-Beat", "x"), got): return self._send(403, b"proof\n")
+            hb = self.headers.get("X-Beat", "x")
+            if not proof_ok(cfg["PHRASE"], hb, got): return self._send(403, b"proof\n")
+            if not hb.isdigit() or int(hb) != lastn(self._host_dir(e, m.group(1))): return self._send(403, b"stale\n")
             hid, t = m.groups()
             ln = int(self.headers.get("Content-Length", "0"))
             body = self.rfile.read(min(ln, 200000))
@@ -95,7 +111,9 @@ class H(http.server.BaseHTTPRequestHandler):
             return self._send(200, b"got\n")
         if self.path == "/dead":
             hid = self.headers.get("X-Host", "")[:64]
-            if not proof_ok(cfg["TOKEN"], self.headers.get("X-Beat", "x"), got): return self._send(403, b"proof\n")
+            hb = self.headers.get("X-Beat", "x")
+            if not proof_ok(cfg["PHRASE"], hb, got): return self._send(403, b"proof\n")
+            if not hb.isdigit() or int(hb) != lastn(self._host_dir(e, hid)): return self._send(403, b"stale\n")
             if hid:
                 open(os.path.join(self._host_dir(e, hid), "DEAD"), "w").write(f"{time.time()}\n")
                 print(f"[taskd] {e}/{hid}: agent confirmed self-destruct", flush=True)

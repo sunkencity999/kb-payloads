@@ -53,8 +53,18 @@ case $CMD in
   expire)
     sed -i "s/^EXPIRY=.*/EXPIRY=$((now-1))/" "$D/engagement.conf"
     echo "LOGGED: $(date -u +%FT%TZ) engagement $E EXPIRED - every beating agent receives KILL";;
+  rebind)
+    # after a target reboot the placed agent is gone (no persistence = design) and
+    # the server replay guard would reject a fresh copy restarting N at 1. Rebind
+    # is the explicit, LOGGED way to re-arm a name - never silent.
+    h=$2; HD="$D/targets/$h"
+    [ -d "$HD" ] || { echo "FAIL: $h has no state to rebind"; exit 1; }
+    rm -f "$HD/lastn" "$HD/registered" "$HD/RECALL"
+    rm -rf "$HD/tasks"
+    echo "LOGGED: $(date -u +%FT%TZ) REBIND $E/$h - replay high-water cleared, name re-armed for a fresh placement"
+    echo "      (previous beat/results history is preserved under targets/$h/)";;
   results)
     h=$2; for f in "$D"/targets/$h/results/*.out; do [ -e "$f" ] || { echo "no results"; exit 0; }
       echo "===== $(basename "$f" .out) ====="; cat "$f"; echo; done;;
-  *) echo "usage: taskctl.sh <eng> list|register|queue|kill|recall|expire|results"; exit 1;;
+  *) echo "usage: taskctl.sh <eng> list|register|queue|kill|recall|rebind|expire|results"; exit 1;;
 esac

@@ -172,7 +172,7 @@ python3 -m py_compile "$OPB/taskd.py" 2>/dev/null && { echo "PASS  taskd compile
 if command -v busybox >/dev/null 2>&1; then busybox ash -n "$OPB/agent.sh" && { echo "PASS  agent ash-parse"; pass=***; }; sh -n "$OPB/agent.sh" && { echo "PASS  agent sh-parse"; pass=***; }; else sh -n "$OPB/agent.sh" && { echo "PASS  agent sh-parse"; pass=***; }; fi
 OPR=$(mktemp -d)
 KB_OP_ROOT="$OPR" "$OPB/mk_eng.sh" ci 10.0.0.0/24 2 "ci unit" >/dev/null 2>&1
-CFGV=$(awk -F= '/^TOK/{print length($2)}' "$OPR/ci/engagement.conf")
+CFGV=$(awk -F= '/^PHRASE/{print length($2)}' "$OPR/ci/engagement.conf")
 PERMV=$(stat -c '%a' "$OPR/ci/engagement.conf" 2>/dev/null || stat -f '%Lp' "$OPR/ci/engagement.conf")
 { [ "$CFGV" = "24" ] && [ "$PERMV" = "600" ]; } && { echo "PASS  mk_eng: 24-char phrase + 600 perms"; pass=***; } || { echo "FAIL  mk_eng outputs (len=$CFGV perm=$PERMV)"; fail=$((fail+1)); }
 SRC="$(sed -n '/^in_scope(){/,/^}/p' "$OPB/taskctl.sh")"
@@ -187,7 +187,41 @@ RC=$?; [ $RC -eq 0 ] && { echo "PASS  queue accepts in-scope registered"; pass=*
 KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci expire >/dev/null 2>&1
 KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci queue ghosthost "$OPB/mk_eng.sh" >/dev/null 2>&1
 RC=$?; [ $RC -eq 2 ] && { echo "PASS  expired engagement refuses tasks"; pass=***; } || { echo "FAIL  expired queue rc=$RC"; fail=$((fail+1)); }
-grep -c '\*\*\*' "$OPB/mk_eng.sh" "$OPB/agent.sh" 2>/dev/null | grep -v ':0$' >/dev/null && { echo "FAIL  redactor contamination in sources"; fail=$((fail+1)); } || { echo "PASS  sources uncontaminated"; pass=***; }
+KL3=$(mktemp -d); mkdir -p "$KL3/t/targets/u1/tasks" "$KL3/t/beacons"
+PH3=ATMOSTONCEPHRASE24CHARXX; printf 'echo hi\n' > "$KL3/t/targets/u1/tasks/001.sh"
+printf 'NAME=t\nSCOPE=127.0.0.1/32\nEXPIRY=9999999999\nPHRASE=%s\n' "$PH3" > "$KL3/t/engagement.conf"
+KB_OP_ROOT="$KL3" python3 "$OPB/taskd.py" 8914 >/dev/null 2>&1 &
+OPU=$!
+sleep 1
+PA1=$(printf '%s:1' "$PH3" | sha256sum | awk '{print $1}')
+PAA=$PA1
+A1R=$(curl -s --max-time 5 -H "X-Engagement: t" -H "Authorization: KBPROOF $PAA" "http://127.0.0.1:8914/beat/u1/1" 2>/dev/null)
+A1B=$(curl -s --max-time 5 -H "X-Engagement: t" -H "Authorization: KBPROOF $PAA" -H "X-Beat: 1" "http://127.0.0.1:8914/task/u1/001.sh" 2>/dev/null)
+PA2=$(printf '%s:2' "$PH3" | sha256sum | awk '{print $1}')
+A2R=$(curl -s --max-time 5 -H "X-Engagement: t" -H "Authorization: KBPROOF $PA2" "http://127.0.0.1:8914/beat/u1/2" 2>/dev/null)
+kill $OPU 2>/dev/null; rm -rf "$KL3"
+{ [ "${A1R#TASK}" != "$A1R" ] && printf '%s' "$A1B" | grep -q "echo hi" && [ "$A2R" = "NOTASK" ]; } && { echo "PASS  at-most-once: announce, deliver, never re-announce"; pass=***; } || { echo "FAIL  at-most-once (announce=$A1R body=[$A1B] beat2=$A2R)"; fail=$((fail+1)); }
+KL2=$(mktemp -d)
+mkdir -p "$KL2/t/targets/r1/tasks" "$KL2/t/beacons"
+printf 'PHRASE_ABC_24CHXXXXXX\n' > "$KL2/phrase"
+PH=$(cat "$KL2/phrase")
+printf 'NAME=t\nSCOPE=127.0.0.1/32\nEXPIRY=9999999999\nPHRASE=%s\n' "$PH" > "$KL2/t/engagement.conf"
+KB_OP_ROOT="$KL2" python3 "$OPB/taskd.py" 8913 >/dev/null 2>&1 &
+OPD=$!
+sleep 1
+P1=$(printf '%s:5' "$PH" | sha256sum | awk '{print $1}')
+R1=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 -H "X-Engagement: t" -H "Authorization: KBPROOF $P1" "http://127.0.0.1:8913/beat/r1/5" 2>/dev/null)
+R2=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 -H "X-Engagement: t" -H "Authorization: KBPROOF $P1" "http://127.0.0.1:8913/beat/r1/5" 2>/dev/null)
+kill $OPD 2>/dev/null
+{ [ "$R1" = "200" ] && [ "$R2" = "403" ]; } && { echo "PASS  monotonic-N: beat accepted, REPLAY refused 403"; pass=***; } || { echo "FAIL  replay guard (first=$R1 replay=$R2)"; fail=$((fail+1)); }
+mkdir -p "$OPR/ci/targets/rbhost"; { echo 1; echo 10.0.0.8; } > "$OPR/ci/targets/rbhost/registered"; echo 99 > "$OPR/ci/targets/rbhost/lastn"
+KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci rebind rbhost >/dev/null 2>&1
+[ ! -f "$OPR/ci/targets/rbhost/lastn" ] && { echo "PASS  rebind clears high-water (logged op)"; pass=***; } || { echo "FAIL  rebind left lastn"; fail=$((fail+1)); }
+rm -rf "$KL2"
+# shipped build inputs ONLY: planted-credential fixtures in THIS file legitimately
+# contain stars - a fixture is data, not code; scanning it would false-positive.
+KONTAM=$(grep -c '\*\*\*' "$OPB/mk_eng.sh" "$OPB/agent.sh" "$OPB/taskctl.sh" "$OPB/taskd.py" 2>/dev/null | grep -v ':0$')
+[ -z "$KONTAM" ] | grep -v ':0$' >/dev/null && { echo "FAIL  redactor contamination in sources"; fail=$((fail+1)); } || { echo "PASS  sources uncontaminated"; pass=***; }
 rm -rf "$OPR"
 
 

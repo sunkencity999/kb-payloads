@@ -139,5 +139,17 @@ grep -q "raw=weirdfield=zzz" "$HJ/cap.log" && { echo "PASS  unknown-field raw fa
 rm -rf "$HJ"
 
 
+echo "== kb_names (ash-parity + dnsmasq verbose-format harvest regex; live-witnessed 2026-09-09) =="
+busybox ash -n "$PAY/kb_names/payload.sh" 2>/dev/null && { echo "PASS  ash -n kb_names"; pass=***; } || { echo "FAIL  ash -n kb_names"; fail=$((fail+1)); }
+KQ=$(mktemp -d)
+printf 'Sep  9 08:24:39 dnsmasq[12619]: 1 172.16.52.133/33736 query[A] round3a.test from 172.16.52.133\nSep  9 08:24:39 dnsmasq[12619]: 1 172.16.52.133/33736 config round3a.test is NXDOMAIN\nSep  9 08:24:40 dnsmasq[12619]: 3 127.0.0.1/40397 query[A] round3c.test from 127.0.0.1\n' > "$KQ/q.log"
+GOT=$(awk '{ if ($0 ~ /query\[/) { n=""; ci=""; for(i=1;i<=NF;i++){ if($i ~ /^query\[/){ n=$(i+1); sub(/^[A-Z]\]/,"",n); sub(/^\]/,"",n) } if($i=="from"){ ci=$(i+1); sub(/#.*/,"",ci) } } if(n!="") print ci"|"n } }' "$KQ/q.log" | sort | tr '\n' ' ')
+[ "$GOT" = "127.0.0.1|round3c.test 172.16.52.133|round3a.test " ] && { echo "PASS  verbose-format name+client extract"; pass=***; } || { echo "FAIL  name extract (got: $GOT)"; fail=$((fail+1)); }
+KBNC=$(grep -v '^[[:space:]]*#' "$PAY/kb_names/payload.sh")
+echo "$KBNC" | grep -q 'A?' && { echo "FAIL  stale A? in code"; fail=$((fail+1)); } || { echo "PASS  no stale A? in code"; pass=***; }
+echo "$KBNC" | grep -qF 'query\[' && { echo "PASS  verbose query[ format in code"; pass=***; } || { echo "FAIL  verbose query[ format missing"; fail=$((fail+1)); }
+rm -rf "$KQ"
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

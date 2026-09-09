@@ -227,7 +227,7 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (62/62 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (61/61 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
@@ -244,7 +244,7 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 62/62.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 61/61.
 
 ---
 
@@ -266,7 +266,7 @@ Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a
 
 **Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
 
-Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 62/62 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 61/61 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -281,7 +281,7 @@ Hijack needs names to hijack. KB Names gets them. Two modes, auto-detected — t
 
 **Output → pipeline:** after the listen, `LIST_PICKER` offers to **merge the harvested names into `/root/portals/hijack_targets.txt`** (dedup, shape-validated, cap 25, old file preserved as `.bak`) — GhostRecon → Names → Hijack becomes one intelligence loop: who's talking → what they trust → serve them their own names back.
 
-**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 62/62 including a verbose-format extraction unit built from the real captured log lines.
+**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 61/61 including a verbose-format extraction unit built from the real captured log lines.
 
 ---
 
@@ -352,7 +352,7 @@ The agent is **operator-placed, per-host, as a copy**. That is the entire propag
 
 ### 5. Why it works
 
-Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (62/62, with replay, at-most-once, and refusal paths as units, not slides).
+Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (61/61, with replay, at-most-once, and refusal paths as units, not slides).
 
 ### 6. Where to use it — and where not to
 

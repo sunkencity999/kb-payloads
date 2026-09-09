@@ -295,6 +295,74 @@ Requires `nmap` (NetRecon), `tcpdump` (GhostRecon/KickAudit), or `bluetoothctl` 
 
 ---
 
+## Operator workflow: step one to done
+
+The training path — one engagement, start to finish, with the menu for every move. Two ground rules before step one: **you are only ever on networks your employer put you on in writing** (scope document named, date, allowed ranges), and **every Start has its Stop** — the suite is designed so the undo is always available and always verified. If a step's verification line doesn't match, stop there and fix it; don't stack the next payload on top of a broken state.
+
+### Phase 0 — Deploy (once per Pager)
+
+```sh
+# from the repo, on your rig, Pager on USB/ethernet (172.16.42.1) or tunnel (172.16.52.1):
+for d in payloads/*/; do
+  cat=$(sed -n 's|^# Category: ||p' "$d/payload.sh")
+  ssh root@172.16.42.1 "mkdir -p /root/payloads/user/$cat"
+  scp -r "$d" root@172.16.42.1:/root/payloads/user/$cat/
+done
+ssh root@172.16.42.1 'for f in /root/payloads/user/*/*/payload.sh; do ash -n "$f" || echo "FAIL $f"; done'
+```
+One-time: **interception → KB Portal Install** (pulls uhttpd, generates the TLS cert, keeps the original dnsmasq init as `.orig` — that file is the recovery anchor for everything DNS).
+
+### Phase 1 — Who is there (recon, passive first)
+
+1. *general → KB NetRecon* (joined mode) — fast active sweep: hosts, MACs, open ports. Note the `vantage:` header it prints.
+2. *general → KB GhostRecon* — 30–90 s of listening, zero packets: names, vendors, device classes from the chatter every LAN emits.
+3. *reconnaissance → KB GhostBt / KB KickAudit* as scope allows.
+
+Cross-check the counts (a passive-vs-active gap = filtered or quiet hosts — that IS a finding). All loot appends to `/root/loot/kb_<name>.txt` with the net/iface/ssid/mode header so every artifact says where it came from.
+
+### Phase 2 — Move to the AP (elevation of vantage)
+
+Join the Pager's own AP (`pager-open`) with your test client, or run the Pager in mode B where you can. This is where the interception trio lives — everything from here on affects **clients joined to the Pager**, never the upstream network.
+
+### Phase 3 — What do they trust (KB Names)
+
+*general → KB Names* → pick 30/120 s. On the AP this is the **complete** answer: every hostname every joined client resolves, per client, plus DHCP lease names. Accept the merge offer — it seeds `/root/portals/hijack_targets.txt` (deduped, capped, old file `.bak`'d). These names are your target list: things clients *actually depend on*, not guesses.
+
+### Phase 4 — The engagement (interception trio, one at a time)
+
+Order matters when two share a resource — KB Portal's wildcard DNS makes hijack targets unreachable, so **pick one DNS story at a time**:
+
+- **Generic credential story:** *interception → KB Portal Start* → pick template → probe it once from your test client (captive portals announce themselves: `curl -s http://whatever/ | grep -c "Guest Network"`), let it run, **Stop**.
+- **Targeted story:** write/seed the target list (Phase 3), *interception → KB Hijack Start* → both names resolve to the Pager, unlisted names keep real DNS (verify: one listed, one unlisted `nslookup`) → **Stop**.
+- **Wire story (always safe to run alongside):** *interception → KB Tap Start* → br-lan → let clients work → **Stop** (harvest decodes Basic auth into plaintext user:pass with a sha256 manifest).
+
+### Phase 5 — Undo, verified (the discipline, not the afterthought)
+
+Every Stop verifies its own cleanup and prints the evidence — read it, don't assume it:
+
+- Portal/Hijack Stop: `DNS verified restored (NXDOMAIN returned)` / first target resolves real again; port 80 = 0; confdir = 0 files.
+- Tap Stop: `tcpdump gone`, ring + marker cleaned, harvest line counts printed.
+- If a Stop ever claims a failure (`DNS still hijacked!`): restart dnsmasq by hand (`/etc/init.d/dnsmasq.hak5 restart`) and re-check with `nslookup <name> 127.0.0.1` — the payload already tries hard (kill → procd start → cooldown retry → manual respawn from the generated conf) but a human confirms the state before you walk away.
+
+### Phase 6 — Collect, chain, close
+
+Loot lives on the Pager (`/root/loot/`), and you are the exfiltration — by design. Pull it over the tunnel and verify every file against its manifest:
+
+```sh
+scp -r root@172.16.52.1:/root/loot ./engagement-$(date +%Y%m%d)/
+cd engagement-*/ && sha256sum -c */*.sha256 2>/dev/null || echo "(some payloads ship no manifest - hash on arrival)"
+```
+Then the report loop: **evidence → finding → fix**. Every credential captured is a finding that ends in one of three sentences for the client: "TLS was missing on X, here's the fix", "hosts still speak HTTP Basic on X, here's the fix", "users type passwords into a page that wasn't their IdP — here's the phishing-detection training they need." We do not ship a problem we cannot name the cure for.
+
+### Menu map (where everything lives)
+
+- **general:** KB NetRecon · KB GhostRecon · KB Names
+- **reconnaissance:** KB GhostBt · KB KickAudit
+- **interception:** KB Portal Install/Start/Stop · KB Tap Start/Stop · KB Hijack Start/Stop
+- **games:** KB Hoard Hopper · KB Beacon (yes, the pager has a roguelite; long stakeouts are stakeouts)
+
+---
+
 ## Test harness (`harness/`)
 
 Pager payloads are DuckyScript-flavored **BusyBox ash** with UI commands the rest of the world doesn't have. The harness runs the **actual payload files, unmodified**, under `busybox ash` with a shim for the UI layer and deterministic mocks for the heavy binaries — so logic bugs surface on the workstation, not on the device.

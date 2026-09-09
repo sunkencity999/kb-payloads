@@ -164,5 +164,32 @@ KB_LOOT_FAKE_MANIFEST="$KL/fake.man" ./tools/kb_loot.sh --local "$KLD" -o "$KL/o
 rm -rf "$KL"
 
 
+echo "== kb_operative (scoped implant: rig-side trio + target agent; full e2e localhost-witnessed 2026-09-09) =="
+OPB="$HERE/../tools/kb_operative"
+bash -n "$OPB/mk_eng.sh" 2>/dev/null && { echo "PASS  bash -n mk_eng"; pass=***; } || { echo "FAIL  bash -n mk_eng"; fail=$((fail+1)); }
+bash -n "$OPB/taskctl.sh" 2>/dev/null && { echo "PASS  bash -n taskctl"; pass=***; } || { echo "FAIL  bash -n taskctl"; fail=$((fail+1)); }
+python3 -m py_compile "$OPB/taskd.py" 2>/dev/null && { echo "PASS  taskd compiles"; pass=***; } || { echo "FAIL  taskd compile"; fail=$((fail+1)); }
+if command -v busybox >/dev/null 2>&1; then busybox ash -n "$OPB/agent.sh" && { echo "PASS  agent ash-parse"; pass=***; }; sh -n "$OPB/agent.sh" && { echo "PASS  agent sh-parse"; pass=***; }; else sh -n "$OPB/agent.sh" && { echo "PASS  agent sh-parse"; pass=***; }; fi
+OPR=$(mktemp -d)
+KB_OP_ROOT="$OPR" "$OPB/mk_eng.sh" ci 10.0.0.0/24 2 "ci unit" >/dev/null 2>&1
+CFGV=$(awk -F= '/^TOK/{print length($2)}' "$OPR/ci/engagement.conf")
+PERMV=$(stat -c '%a' "$OPR/ci/engagement.conf" 2>/dev/null || stat -f '%Lp' "$OPR/ci/engagement.conf")
+{ [ "$CFGV" = "24" ] && [ "$PERMV" = "600" ]; } && { echo "PASS  mk_eng: 24-char phrase + 600 perms"; pass=***; } || { echo "FAIL  mk_eng outputs (len=$CFGV perm=$PERMV)"; fail=$((fail+1)); }
+SRC="$(sed -n '/^in_scope(){/,/^}/p' "$OPB/taskctl.sh")"
+( SCOPE="10.9.9.0/24"; eval "$SRC"; in_scope 10.9.9.5 ) && { echo "PASS  scope gate allows in-net"; pass=***; } || { echo "FAIL  scope allows"; fail=$((fail+1)); }
+( SCOPE="10.9.9.0/24"; eval "$SRC"; in_scope 8.8.8.8 ) && { echo "FAIL  scope gate leaked 8.8.8.8"; fail=$((fail+1)); } || { echo "PASS  scope gate refuses out-of-net"; pass=***; }
+mkdir -p "$OPR/ci/targets/ghosthost"
+KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci queue ghosthost "$OPB/mk_eng.sh" >/dev/null 2>&1
+RC=$?; [ $RC -eq 1 ] && { echo "PASS  queue refuses unregistered host"; pass=***; } || { echo "FAIL  unregistered queue rc=$RC"; fail=$((fail+1)); }
+mkdir -p "$OPR/ci/targets/ghosthost" && { echo 1; echo 10.0.0.9; } > "$OPR/ci/targets/ghosthost/registered"
+KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci queue ghosthost "$OPB/mk_eng.sh" >/dev/null 2>&1
+RC=$?; [ $RC -eq 0 ] && { echo "PASS  queue accepts in-scope registered"; pass=***; } || { echo "FAIL  in-scope queue rc=$RC"; fail=$((fail+1)); }
+KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci expire >/dev/null 2>&1
+KB_OP_ROOT="$OPR" "$OPB/taskctl.sh" ci queue ghosthost "$OPB/mk_eng.sh" >/dev/null 2>&1
+RC=$?; [ $RC -eq 2 ] && { echo "PASS  expired engagement refuses tasks"; pass=***; } || { echo "FAIL  expired queue rc=$RC"; fail=$((fail+1)); }
+grep -c '\*\*\*' "$OPB/mk_eng.sh" "$OPB/agent.sh" 2>/dev/null | grep -v ':0$' >/dev/null && { echo "FAIL  redactor contamination in sources"; fail=$((fail+1)); } || { echo "PASS  sources uncontaminated"; pass=***; }
+rm -rf "$OPR"
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

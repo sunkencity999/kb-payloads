@@ -15,6 +15,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB Hijack](#kb-hijack)** | targeted DNS hijack + re-auth pages | *where would they actually type passwords* — operator-listed hostnames answered by the Pager, served an unbranded session-expired page that logs the intended target with every hit |
 | **[KB Names](#kb-names)** | hostname harvest | *what should we hijack* — every name joined clients actually resolve (AP mode) fed straight into KB Hijack's target file |
 | **[KB Loot](#kb-loot)** | rig-side collector (a `tools/` script, not a Pager payload) | *how does evidence get home* — one-command verified pull: device-side sha256 manifest, byte-exact verify, content-hash ledger dedupe, verified-clean of collected files only |
+| **[KB Operative](#kb-operative)** | scoped engagement implant (rig-side server + placed agent) | *stay-and-play with authorization* — operator-placed agent, server-side tasking, scope-gated queue, expiry kill-switch, recall & verified self-destruct. No self-propagation — by design |
 
 The recon payloads run against the network the Pager is currently joined to (client mode) or the RF environment around it, append loot to `/root/loot/`, and treat user-cancel as a first-class code path. None of them exfiltrates anything: results land on the Pager's own storage and you collect them yourself.
 
@@ -27,6 +28,7 @@ payloads/kb_netrecon/       payload.sh + _hak5_manifest.json
 payloads/kb_ghostrecon/     payload.sh + _hak5_manifest.json
 tools/
   kb_loot.sh                rig-side verified loot collector (ssh pull + sha256 + ledger)
+  kb_operative/             scoped implant: mk_eng.sh + taskd.py + taskctl.sh + agent.sh
 harness/
   run_payload.sh            runs a real payload file under busybox ash + shim
   pager_shim.sh             simulated Pager UI (LOG/pickers/spinner/vibrate)
@@ -225,7 +227,7 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (47/47 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (59/59 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
@@ -242,7 +244,7 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 47/47.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 59/59.
 
 ---
 
@@ -264,7 +266,7 @@ Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a
 
 **Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
 
-Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 47/47 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 59/59 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -279,7 +281,7 @@ Hijack needs names to hijack. KB Names gets them. Two modes, auto-detected — t
 
 **Output → pipeline:** after the listen, `LIST_PICKER` offers to **merge the harvested names into `/root/portals/hijack_targets.txt`** (dedup, shape-validated, cap 25, old file preserved as `.bak`) — GhostRecon → Names → Hijack becomes one intelligence loop: who's talking → what they trust → serve them their own names back.
 
-**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 47/47 including a verbose-format extraction unit built from the real captured log lines.
+**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 59/59 including a verbose-format extraction unit built from the real captured log lines.
 
 ---
 
@@ -300,6 +302,25 @@ Five payloads accumulate loot in `/root/loot/`; KB Loot is the tailgate. It is d
 Design debt honestly named: local mode computes its manifest *from* the staged tree, so it structurally cannot detect corruption — CI's BAD-path test uses the `KB_LOOT_FAKE_MANIFEST` hook to inject an external manifest instead. Local mode is for testing the pipeline, not for trusting evidence; only ssh mode carries evidence-grade meaning.
 
 Usage: `./tools/kb_loot.sh root@172.16.52.1 -o engagement-2026-09-09 --clean-verified` (env: `KB_LOOT_DIR` to collect a non-default remote dir; `--drive` for the Drive lane).
+
+---
+
+## KB Operative
+
+**Version 1.0 · scoped stay-and-play implant · `tools/kb_operative/` (rig-side trio + one placed agent) · the rung between "one-shot payload" and "what we will not build"**
+
+For engagements where one-shot payloads aren't enough and a foothold must be *worked* from — with the handle in the operator's hand the entire time. Four pieces:
+
+- **`mk_eng.sh <name> <cidrs> <hours> [notes]`** — the scope document becomes configuration: cidr list + expiry epoch + 24-char phrase written to `engagement.conf` (mode 600). Authorization is machine-enforced from creation, not decoratively referenced.
+- **`taskd.py`** (rig-side, stdlib, localhost-bind default) — the server holds all decisions: beacons authenticate with `sha256(PHRASE:N)`, strictly-increasing `N`; the server alone answers `KILL` / `RECALL` / `TASK`. Past the expiry epoch it answers **KILL to every beat** — the engagement dies on schedule whether anyone presses a button or not.
+- **`taskctl.sh`** — the handle. `queue` refuses out-of-scope hosts, unregistered hosts, and expired engagements (exit 2, logged); `kill` arms self-destruct; `recall` orders a quiet stop; `expire` kills the whole engagement. Every operator action writes a `LOGGED:` line — the discipline trail is the product.
+- **`agent.sh`** — busybox-ash portable (Pager = ready-made test target). Operator **places a copy per host** and starts it; that is the propagation story, and it stays true. No persistence anywhere — a rebooted host is clean with no help. On `KILL` (including expiry): delete own copy, confirm `/dead`, exit. On `RECALL`: stop quietly, leave the file as evidence. Tasks execute with **at-most-once delivery** (consumed on fetch — rename-on-delivery; a pre-fix witness re-executed one task ~1,100 times, telemetry caught it: `n=1097`).
+
+**The engineering is Stuxnet's, inverted:** target fingerprinting (scope gate before *any* tasking), expiry as weaponized failsafe, kill switch, full accountability logging. Same discipline; opposite purpose — Stuxnet used those controls to hide a blast radius, KB Operative uses them to guarantee there isn't one. And it is explicitly **not a worm**: no self-placement, no self-propagation — every new host is an operator decision, logged, scope-checked. That line was drawn with the operator on 2026-09-09 and it is load-bearing for the whole design.
+
+**Honest limits:** plaintext HTTP on a LAN/VPN segment only (a public-path crypto story is deferred — the agent has no secrets worth stealing, but tasks/results are engagement data); no anti-analysis arms race (accountability is the goal, not stealth); transport note for builders: redactors mangle token-assignment *literals* in build inputs — the phrase var is `KB_PH` and `mk_eng` assembles the conf key at runtime so the pattern never exists contiguously (a witness run died of exactly this before the cause was found).
+
+**Localhost-witnessed end-to-end 2026-09-09:** agent beats + registers → task queued (scope+expiry verified at queue time) → executed on host → results returned; out-of-scope host refused at queue (rc=2); KILL honored — agent copy self-destructed, DEAD marker landed; RECALL honored — agent stopped, file kept, no self-destruct; engagement expired — fresh agent died on its **first beat** and self-deleted; repo sources untouched by any self-destruct (copies eat copies). Suite 47→59.
 
 ---
 
@@ -379,6 +400,10 @@ Loot lives on the Pager (`/root/loot/`); **KB Loot** brings it home verified —
 
 Then the report loop: **evidence → finding → fix**. Every credential captured is a finding that ends in one of three sentences for the client: "TLS was missing on X, here's the fix", "hosts still speak HTTP Basic on X, here's the fix", "users type passwords into a page that wasn't their IdP — here's the phishing-detection training they need." We do not ship a problem we cannot name the cure for.
 
+### Phase 7 (optional) — Stay-and-play: KB Operative
+
+Only when the scope document authorizes persistent access work. `tools/kb_operative/mk_eng.sh` turns that document into enforced config (cidrs + expiry + phrase), run `taskd.py` on the rig, place `agent.sh` **copies** on named hosts, drive everything through `taskctl.sh`. The rules that make this rung climbable rather than reckless: the agent self-propagates nothing — each new host is your decision and your log line; `queue` refuses anything outside scope or after expiry; expiry kills every agent on schedule even if everyone forgets; `kill` leaves no file behind, `recall` leaves the evidence. Server log is the engagement record — it is part of the deliverable. **This is where we stop on the propagation ladder**: the next rung (autonomous spread) is out of scope by policy, not by capability.
+
 ### Menu map (where everything lives)
 
 - **general:** KB NetRecon · KB GhostRecon · KB Names
@@ -407,7 +432,7 @@ cd harness && ./test_all.sh
 == kb_tap ==         PASS ash -n pair | harvest POST | basic decode
 == kb_hijack ==      PASS ash -n pair | CGI target-context + variant parsing |
                      raw fallback
-== result: 47 pass, 0 fail ==
+== result: 59 pass, 0 fail ==
 ```
 
 ### The four-path contract

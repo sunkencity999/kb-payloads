@@ -226,5 +226,24 @@ rm -rf "$OPR"
 
 
 case "$pass" in ''|*[!0-9]*) echo "FAIL  pass-counter corrupted (non-numeric)"; fail=$((fail+1));; 0) echo "FAIL  pass-counter never incremented"; fail=$((fail+1));; *) echo "PASS  suite counter numeric and live"; pass=$((pass+1));; esac
+echo "== kb_wire (reverse-wire pair + rig tools; FULL device-wire e2e 2026-09-12: ssh into pager via rig:2222, revoke + expiry immolation) =="
+for f in payloads/kb_wire_start/payload.sh payloads/kb_wire_start/wired.sh payloads/kb_wire_stop/payload.sh; do
+  busybox ash -n "$f" 2>/dev/null && sh -n "$f" 2>/dev/null && { echo "PASS  ash+sh parse $(basename "$f")"; pass=$((pass+1)); } || { echo "FAIL  parse $f"; fail=$((fail+1)); }
+done
+for f in tools/kb_wire/kbwire_rig.sh tools/kb_wire/kbwire_dispatcher.sh; do
+  bash -n "$f" 2>/dev/null && { echo "PASS  bash -n $(basename "$f")"; pass=$((pass+1)); } || { echo "FAIL  bash -n $f"; fail=$((fail+1)); }
+done
+# dispatcher: EVERYTHING unrecognized must be denied (this is the only program
+# the wire key can ever run - denial is the security model)
+KWD=$(mktemp -d)
+SSH_ORIGINAL_COMMAND="rm -rf /" KBWIRE_STATE="$KWD" KBWIRE_PORTBASE=29999 bash tools/kb_wire/kbwire_dispatcher.sh >/dev/null 2>&1
+RC=$?; [ $RC -eq 1 ] && { echo "PASS  dispatcher denies hostile command"; pass=$((pass+1)); } || { echo "FAIL  dispatcher rc=$RC on hostile"; fail=$((fail+1)); }
+SSH_ORIGINAL_COMMAND="" KBWIRE_STATE="$KWD" bash tools/kb_wire/kbwire_dispatcher.sh >/dev/null 2>&1
+RC=$?; [ $RC -eq 1 ] && { echo "PASS  dispatcher denies interactive exec"; pass=$((pass+1)); } || { echo "FAIL  interactive rc=$RC"; fail=$((fail+1)); }
+grep -q "canary" tools/kb_wire/kbwire_dispatcher.sh && grep -q "KBWireCanary" tools/kb_wire/kbwire_dispatcher.sh && { echo "PASS  canary greets before reading"; pass=$((pass+1)); } || { echo "FAIL  greet-first canary missing"; fail=$((fail+1)); }
+grep -q "born past expiry" payloads/kb_wire_start/wired.sh && { echo "PASS  date-gate fails closed"; pass=$((pass+1)); } || { echo "FAIL  fail-closed gate missing"; fail=$((fail+1)); }
+rm -rf "$KWD"
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

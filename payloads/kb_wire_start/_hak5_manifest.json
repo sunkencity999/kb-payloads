@@ -1,0 +1,12 @@
+{
+  "payload": "kb_wire_start",
+  "parent": "user/remote_access",
+  "key": "user~remote_access~kb_wire_start",
+  "time": "2026-09-12T17:20:00-07:00",
+  "last_hash": "",
+  "zip": "",
+  "title": "KB Wire Start",
+  "author": "Smaug",
+  "description": "Self-healing, self-expiring reverse ssh wire to the operator rig (rig:127.0.0.1:PORT -> pager sshd). Banner canary proves the loop before claiming LIVE; watchdog re-establishes; hard expiry self-immolates key+dir+boot entry. Optional reboot persistence.",
+  "version": "1.0"
+}

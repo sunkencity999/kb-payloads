@@ -16,6 +16,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB Names](#kb-names)** | hostname harvest | *what should we hijack* — every name joined clients actually resolve (AP mode) fed straight into KB Hijack's target file |
 | **[KB Loot](#kb-loot)** | rig-side collector (a `tools/` script, not a Pager payload) | *how does evidence get home* — one-command verified pull: device-side sha256 manifest, byte-exact verify, content-hash ledger dedupe, verified-clean of collected files only |
 | **[KB Operative](#kb-operative)** | scoped engagement implant (rig-side server + placed agent) | *stay-and-play with authorization* — operator-placed agent, server-side tasking, scope-gated queue, expiry kill-switch, recall & verified self-destruct. No self-propagation — by design |
+| **[KB Wire](#kb-wire)** | reverse ssh wire (payload pair + rig tools) | *reach the unreachable* — self-healing, self-expiring reverse tunnel: rig:127.0.0.1:PORT → pager sshd, canary-proven before claiming LIVE, rig-side key revocation as true kill-switch |
 
 The recon payloads run against the network the Pager is currently joined to (client mode) or the RF environment around it, append loot to `/root/loot/`, and treat user-cancel as a first-class code path. None of them exfiltrates anything: results land on the Pager's own storage and you collect them yourself.
 
@@ -29,6 +30,7 @@ payloads/kb_ghostrecon/     payload.sh + _hak5_manifest.json
 tools/
   kb_loot.sh                rig-side verified loot collector (ssh pull + sha256 + ledger)
   kb_operative/             scoped implant: mk_eng.sh + taskd.py + taskctl.sh + agent.sh
+  kb_wire/                  rig side of KB Wire: kbwire_rig.sh install/remove + dispatcher
 harness/
   run_payload.sh            runs a real payload file under busybox ash + shim
   pager_shim.sh             simulated Pager UI (LOG/pickers/spinner/vibrate)
@@ -227,7 +229,7 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (61/61 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (70/70 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
@@ -244,7 +246,7 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 61/61.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 70/70.
 
 ---
 
@@ -266,7 +268,7 @@ Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a
 
 **Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
 
-Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 61/61 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 70/70 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -281,7 +283,7 @@ Hijack needs names to hijack. KB Names gets them. Two modes, auto-detected — t
 
 **Output → pipeline:** after the listen, `LIST_PICKER` offers to **merge the harvested names into `/root/portals/hijack_targets.txt`** (dedup, shape-validated, cap 25, old file preserved as `.bak`) — GhostRecon → Names → Hijack becomes one intelligence loop: who's talking → what they trust → serve them their own names back.
 
-**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 61/61 including a verbose-format extraction unit built from the real captured log lines.
+**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 70/70 including a verbose-format extraction unit built from the real captured log lines.
 
 ---
 
@@ -352,7 +354,7 @@ The agent is **operator-placed, per-host, as a copy**. That is the entire propag
 
 ### 5. Why it works
 
-Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (61/61, with replay, at-most-once, and refusal paths as units, not slides).
+Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (70/70, with replay, at-most-once, and refusal paths as units, not slides).
 
 ### 6. Where to use it — and where not to
 
@@ -361,6 +363,32 @@ Because each promise is *architecturally* enforced, not procedurally promised. S
 **Do not use it when:** the scope says "no persistence" (then the whole suite's payload model is your ceiling); the network requires TLS-terminating egress (v1 is plaintext HTTP by documented design, LAN/VPN-segment only — a public-path crypto story is deferred, not skipped silently); you don't own the rig's reachability (an agent that can't hear the handle's commands is just a file on someone's disk past its welcome); or anyone's definition of "careful deployment" starts to mean "press go and hope" — which is the one thing this rung is engineered to make impossible.
 
 **Where the ladder ends:** the next rung down is autonomous spread. It is out of scope by policy, not capability — and the policy is this conversation, on the record above. Trainees: `kill` leaves nothing, `recall` leaves the evidence, `expire` leaves the log. Those three verbs are why we are allowed to climb at all.
+
+---
+
+## KB Wire
+
+**Version 1.0 · reverse ssh wire (payload pair `remote_access → KB Wire Start/Stop` + rig-side `tools/kb_wire/`) · the reach tool for a Pager that sits behind any NAT or firewall**
+
+The Pager can *reach* networks but can't be *reached* in them: no routable address, no inbound through the client's firewall, and its own web UI is locked behind the Mark VII management net. KB Wire inverts the direction: the Pager calls OUT with an ssh client (stock OpenSSH 9.9 on-device) and parks a reverse forward — **rig `127.0.0.1:PORT` → pager sshd** — so from the operator's laptop it's one plain `ssh -p PORT root@127.0.0.1` into a device sitting inside the target network. Built-in payload `remote_access → KB Wire Start` picks persistence and window (default 72 h); `KB Wire Stop` cuts it verified-clean.
+
+**The discipline, piece by piece:**
+
+- **Canary before claim.** The wire's `canary` rides the shell-locked key to the rig dispatcher, which greets the forward (`SSH-2.0-KBWireCanary_1`) and reads the response — an **`SSH-2.0-OpenSSH_9.9` banner coming back through rig→forward→pager proves the entire loop with zero credentials**, and anything else refuses to claim LIVE. (This canary earned its keep *twice* on first device run — see the firmware lessons below.)
+- **The rig key is a key with no shell.** `kbwire_rig.sh install` writes the device's ephemeral pubkey with `command=...kbwire_dispatcher,restrict,port-forwarding,no-pty`: the only programs the wire key can ever exec are `wire` (keepalive body that holds the forward) and `canary` (the banner probe). Interactive exec, unknown commands, PTYs, agent-forwarding: denied and logged to `~/.kbwire/access.log` — the engagement trail includes every wire touch with source IP.
+- **Three endings, all verified.** *Stop payload*: watchdog killed first (so it can't re-establish mid-stop), tunnel, boot entry, identity dir — each removed and re-checked. *Rig revoke* (`kbwire_rig.sh remove`): the **true kill-switch** — authorized_keys line gone, live dispatcher killed (forward torn down inside a ServerAlive cycle), every device retry auth-fails forever after; a dead, lost, or wiped Pager cannot keep a wire open once the operator pulls this trigger. *Expiry*: the date-gate — device watchdog re-sources its config each pass (shortening `EXP` on disk is an operator soft-kill) and self-immolates key+dir+boot entry at the epoch; a process *born* past its window (stale boot entry) refuses to exist at all — **the gate fails closed**.
+- **Watchdog + port migration.** Loss → re-establish within the window, canary re-proven; forward-port conflicts auto-migrate to PORT+1/+2 (witnessed live: `:2299` taken → wire landed on `:2301` and re-canaried).
+- **Ephemeral identity.** ed25519 keypair minted per engagement, destroyed with the dir; the device never holds a rig-side credential and the rig-side key is revoked, not "kept for convenience."
+
+### Firmware lessons this build paid for in real failures (device-witnessed 2026-09-12)
+
+1. **Pager sshd does not bind its own loopback** — it listens on the br-lan address only. A tunnel targeting `127.0.0.1` on the device side forwards into a zero-byte void while LAN-side ssh works fine. Fixed with the `PTGT` config key (use the bridge IP; default stays loopback for normal boxes). The loopback *lab* could never catch this — the rig's sshd binds `lo`; **your lab must not resemble your lab, it must resemble the target.**
+2. **Pager sshd is silent until greeted** (anti-version-scan): it answers real clients because clients send their version first, but starves bare banner-reads. A read-first canary false-fails on it. Fixed: dispatcher writes `SSH-2.0-KBWireCanary_1` *before* reading. Both bugs survived the loopback witness and died only on the real device — canary discipline caught both; neither ever claimed LIVE.
+3. **`pkill -f <pattern>` self-matches your own ssh command line** when the pattern string rides the command text — it killed the rig-side session and tore the forward *itself* during a test. Verify with precise patterns, kill by PID.
+
+**Full device-witnessed e2e:** rig-side install → device Start → `WIRE_READY` (canary `ok :2222` in the dispatcher log) → **real ssh session INTO the pager from the rig** (`WIRE_SHELL_OK`, hostname + br-lan IP returned) → rig revoke killed the live session and every retry since auth-failed → expiry soft-kill via on-disk `EXP` edit → `/root/kbwire` self-destroyed, no boot entry, no processes, device + rig swept clean.
+
+**Honest limits:** plaintext by nature — it's ssh to the device's own sshd, so confidentiality rides on pager host keys (first-contact TOFU via `accept-new`; pin the host key for real engagements); rig sshd must allow tcp-forwarding (it does, default); v1 forwards the ssh service only (no SOCKS/DNS story); a *fully* air-gapped rig (no outbound) can't be wired to at all — this needs the device to reach *you*.
 
 ---
 

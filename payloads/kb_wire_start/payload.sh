@@ -9,7 +9,15 @@
 # ssh-keygen ed25519 present; pager sshd listens :22; /etc/rc.d boot entries
 # run; busybox awk systime(); flash ~3.4G free. Rig side needs OpenSSH only.
 LOG green "KB Wire Start v1.0 - reverse tunnel, proven loop, hard expiry"
-SRC=$(dirname "${KB_WIRE_SRC:-$0}")
+# wired.sh lives beside this payload - but MKVII SOURCES payload.sh, so $0 may
+# be the menu shell, not this file. Resolve by CANDIDATES (first dir that
+# actually holds wired.sh), never by trusting $0 alone. (Device-witnessed bug
+# 2026-09-13: sourcing via a runner elsewhere = false "Install broken".)
+SRC=""
+for _c in "${KB_WIRE_SRC:-}" "$(dirname "$0" 2>/dev/null)" "$PWD" \
+          /root/payloads/user/remote_access/kb_wire_start; do
+  [ -n "$_c" ] && [ -f "$_c/wired.sh" ] && { SRC="$_c"; break; }
+done
 DIR=${KB_WIRE_DIR:-/root/kbwire}
 RIGCONF_FILE=${KB_WIRE_RIGCONF:-/root/kbwire/rig.conf}
 mkdir -p "$DIR" 2>/dev/null || { LOG red "no writable $DIR"; ALERT "Flash write failed"; exit 0; }
@@ -71,9 +79,13 @@ LOG yellow "first wire to this rig? install the public key rig-side:"
 LOG cyan "  $(cat "$DIR/wire_key.pub")"
 
 # mechanism: wired.sh (no UI - also runs from rc.d at boot, self-immolates)
+if [ -z "$SRC" ]; then
+  LOG red "wired.sh not found beside payload (checked KB_WIRE_SRC, dirname\$0, PWD, canonical path)"
+  LOG red "re-push payloads/kb_wire_start/ to the payload dir"
+  ALERT "Install broken"; exit 0
+fi
 cp "$SRC/wired.sh" "$DIR/wired.sh" 2>/dev/null \
-  || cp "$DIR/../kb_wire_start/wired.sh" "$DIR/wired.sh" 2>/dev/null \
-  || { LOG red "wired.sh missing next to payload"; ALERT "Install broken"; exit 0; }
+  || { LOG red "cannot copy wired.sh from $SRC (flash write failed?)"; ALERT "Install broken"; exit 0; }
 ash -n "$DIR/wired.sh" 2>/dev/null || { LOG red "wired.sh failed syntax check"; ALERT "Install broken"; exit 0; }
 {
   echo "DIR=$DIR"

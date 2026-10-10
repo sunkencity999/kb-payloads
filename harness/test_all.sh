@@ -297,5 +297,76 @@ done
 rm -rf "$WT" "$WSH/.compose.tmp" 2>/dev/null
 
 
+
+echo "== kb_page (BLE broadcaster; DEVICE-WITNESSED 2026-10-10: mid-flight power-off emitted advertising_removed instances 1,2,3 broadcasting OUR frames) =="
+KPP="$PAY/kb_page_start"
+KPST="$PAY/kb_page_stop"
+KPT=$(mktemp -d)
+# --- pure-proto known answers ---
+KAT=$(busybox ash -c ". $KPP/include/kbproto.sh; KBP_SEQ=0 KBP_TOTAL=1 kbp_encode 'HELLO'" 2>/dev/null)
+if [ "$KAT" = "0201060effffff4b425001000148454c4c4f" ]; then echo "PASS  kbp_encode KAT HELLO"; pass=$((pass+1)); else echo "FAIL  kbp_encode KAT ($KAT)"; fail=$((fail+1)); fi
+CAP=$(busybox ash -c ". $KPP/include/kbproto.sh; KBP_SEQ=1 KBP_TOTAL=2 kbp_encode 'ABCDEFGHIJKLMNOPQRST'" 2>/dev/null)
+if [ "$CAP" = "0201061bffffff4b42500101024142434445464748494a4b4c4d4e4f505152" ]; then echo "PASS  18-char cap + len byte + seq/total"; pass=$((pass+1)); else echo "FAIL  char cap ($CAP)"; fail=$((fail+1)); fi
+KH=$(busybox ash -c ". $KPP/include/kbproto.sh; kbp_hex 'ABC'" 2>/dev/null)
+if [ "$KH" = "414243" ]; then echo "PASS  kbp_hex KAT (printf-quote, no od on device)"; pass=$((pass+1)); else echo "FAIL  kbp_hex ($KH)"; fail=$((fail+1)); fi
+# --- decoder fixtures (rig-side reassembly) ---
+DEC="$HERE/../tools/kb_page/kbpage_decode.py"
+if command -v python3 >/dev/null 2>&1 && [ -f "$DEC" ]; then
+  MSG=$(python3 "$DEC" < "$HERE/fixtures/kbpage/frames.log" 2>/dev/null | tail -1)
+  case "$MSG" in
+    *"MESSAGE (3 frames): 'SMAUG GUARDS THE HOARD AND PAGES THE NIGHT SHIFT AWAY'"*) echo "PASS  decoder replay exact reassembly"; pass=$((pass+1));;
+    *) echo "FAIL  decoder replay ($MSG)"; fail=$((fail+1));;
+  esac
+  WRAP=$(python3 "$DEC" < "$HERE/fixtures/kbpage/btmon_wrapped.txt" 2>/dev/null)
+  case "$WRAP" in
+    *"frame 0/2"*) echo "PASS  decoder btmon wrapped-continuation"; pass=$((pass+1));;
+    *) echo "FAIL  decoder wrapped ($WRAP)"; fail=$((fail+1));;
+  esac
+  JUNK=$(python3 "$DEC" < "$HERE/fixtures/kbpage/junk_suffix.txt" 2>/dev/null)
+  case "$JUNK" in
+    *"'OARD."*) echo "FAIL  decoder absorbed pad junk ($JUNK)"; fail=$((fail+1));;
+    *"'OARD'"*) echo "PASS  decoder len-bound vs pad junk"; pass=$((pass+1));;
+    *) echo "FAIL  decoder junk empty ($JUNK)"; fail=$((fail+1));;
+  esac
+  BAD=$(echo "ff ff 4b 42 50 01 00 03" | python3 "$DEC" 2>/dev/null)
+  if [ -z "$BAD" ]; then echo "PASS  decoder refuses mid-frame magic"; pass=$((pass+1)); else echo "FAIL  decoder false-positive ($BAD)"; fail=$((fail+1)); fi
+else
+  echo "SKIP  decoder fixtures (no python3/decoder)"
+fi
+# --- start payload: compose path; sanitizer strips shell meta ---
+run "compose (no spawn)" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w.sh" KBP_PIDFILE="$KPT/rot.pid" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=HOARD STATUS: SECURE\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
+if [ -f "$KPT/w.sh" ] && busybox ash -n "$KPT/w.sh" >/dev/null 2>&1; then echo "PASS  composed rotator syntax-clean"; pass=$((pass+1)); else echo "FAIL  compose file"; fail=$((fail+1)); fi
+run "sanitize" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w2.sh" KBP_PIDFILE="$KPT/rot.pid" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=EVIL \$HOME \`id\` \"q\" \\z\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
+if grep -q 'KBP_TEXT="EVIL HOME id q z"' "$KPT/w2.sh" 2>/dev/null; then echo "PASS  shell-meta stripped from compose header"; pass=$((pass+1)); else echo "FAIL  sanitizer ($(head -1 "$KPT/w2.sh" 2>/dev/null))"; fail=$((fail+1)); fi
+run "cancel" "cancelled - nothing broadcast" KBP_SPAWN=0 KBP_STATE="$KPT/state2" KBP_RUN="$KPT/w3.sh" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --cancel-first
+if [ ! -f "$KPT/w3.sh" ]; then echo "PASS  cancel writes no compose"; pass=$((pass+1)); else echo "FAIL  cancel composed"; fail=$((fail+1)); fi
+# --- LIVE end-to-end against mock btmgmt ---
+rm -f "$KPT/mockcalls"
+run "LIVE rotator (Fast, mock radio)" "PAGE LIVE" KBP_STATE="$KPT/lstate" KBP_RUN="$KPT/live.sh" KBP_PIDFILE="$KPT/lpid" KBP_MOCK_LOG="$KPT/mockcalls" PATH="$HERE/mocks/kbpage/bin:$PATH" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=DRAGON ON AIR\nLIST_PICKER=Fast (1 s)\nLIST_PICKER=Until Stop"
+sleep 2.5
+FL="$KPT/lstate/frames.log"
+if [ -s "$FL" ]; then
+  echo "PASS  rotator broadcast live (frames: $(wc -l < "$FL"))"; pass=$((pass+1))
+  D1=""
+  if command -v python3 >/dev/null 2>&1; then
+    D1=$(python3 "$DEC" < "$FL" 2>/dev/null | head -1)
+    case "$D1" in
+      *"[frame 0/1] 'DRAGON ON AIR'"*) echo "PASS  live frames decode round-trip"; pass=$((pass+1));;
+      *) echo "FAIL  live decode ($D1)"; fail=$((fail+1));;
+    esac
+  fi
+else
+  echo "FAIL  rotator wrote no frames"; fail=$((fail+1))
+fi
+SOUT=$(env KBP_STATE="$KPT/lstate" KBP_PIDFILE="$KPT/lpid" KBP_RUN="$KPT/live.sh" KBP_MOCK_LOG="$KPT/mockcalls" PATH="$HERE/mocks/kbpage/bin:$PATH" MOCK_DIR=$(mktemp -d) "$HERE/run_payload.sh" "$KPST/payload.sh" 2>&1)
+case "$SOUT" in *"radio power-ladder run"*) echo "PASS  stop ran power-ladder (the proven flush)"; pass=$((pass+1));; *) echo "FAIL  stop skipped ladder ($(echo "$SOUT" | tail -2))"; fail=$((fail+1));; esac
+if [ ! -f "$KPT/lstate/active" ]; then echo "PASS  marker removed by stop"; pass=$((pass+1)); else echo "FAIL  marker survived stop"; fail=$((fail+1)); fi
+run "stop (idle)" "No page active" KBP_STATE="$KPT/nostate" KBP_PIDFILE="$KPT/nopid" MOCK_DIR=$(mktemp -d) -- "$KPST/payload.sh"
+for f in "$KPP/payload.sh" "$KPP/include/kbproto.sh" "$KPP/include/rotator.sh" "$KPST/payload.sh"; do
+  if busybox ash -n "$f" 2>/dev/null; then echo "PASS  ash -n $(basename "$f")"; pass=$((pass+1)); else echo "FAIL  parse $f"; fail=$((fail+1)); fi
+done
+if bash -n "$HERE/../tools/kb_page/kbpage_listen.sh" 2>/dev/null; then echo "PASS  bash -n kbpage_listen.sh"; pass=$((pass+1)); else echo "FAIL  kbpage_listen.sh parse"; fail=$((fail+1)); fi
+rm -rf "$KPT"
+
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

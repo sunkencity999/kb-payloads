@@ -12,6 +12,7 @@ Original [WiFi Pineapple Pager](https://shop.hak5.org/products/wifi-pineapple-pa
 | **[KB Beacon](#kb-beacon)** | BLE advertise only | BLE name chameleon with guaranteed identity restore — the one non-passive payload, and it undoes itself |
 | **[KB Portal](#kb-portal)** | serves pages on its own AP | *what does a joined client reveal* — captive credential/DNS/fingerprint capture trio on the Pager's own access point |
 | **[KB Whisper](#kb-whisper)** | none — LCD/haptics only | *is the trap being discussed right now?* — detached live watcher over the portal capture log: credential/card posts vibrate, link-scanner crawlers ring, zero-click identifiers flag, all on the LCD |
+| **[KB Page](#kb-page)** | BLE advertisements only | *speak without connecting* — broadcast text as rotating encoded BLE advertisements: a one-way pager channel, no pairing, no consent, no network footprint; rig-side decoder reassembles |
 | **[KB Tap](#kb-tap)** | passive pcap ring | *what do clients send unprotected* — cleartext credential harvest (HTTP POST/GET, Basic, FTP/telnet/mail AUTH) from the wire, with Start/Stop markers and offline extraction |
 | **[KB Hijack](#kb-hijack)** | targeted DNS hijack + re-auth pages | *where would they actually type passwords* — operator-listed hostnames answered by the Pager, served an unbranded session-expired page that logs the intended target with every hit |
 | **[KB Names](#kb-names)** | hostname harvest | *what should we hijack* — every name joined clients actually resolve (AP mode) fed straight into KB Hijack's target file |
@@ -30,10 +31,13 @@ payloads/kb_netrecon/       payload.sh + _hak5_manifest.json
 payloads/kb_ghostrecon/     payload.sh + _hak5_manifest.json
 payloads/kb_whisper_start/    payload.sh + include/{triage,watcher}.sh + template/gate_card/ + manifest
 payloads/kb_whisper_stop/     payload.sh + _hak5_manifest.json
+payloads/kb_page_start/       payload.sh + include/{kbproto,rotator}.sh + manifest
+payloads/kb_page_stop/        payload.sh + _hak5_manifest.json
 tools/
   kb_loot.sh                rig-side verified loot collector (ssh pull + sha256 + ledger)
   kb_operative/             scoped implant: mk_eng.sh + taskd.py + taskctl.sh + agent.sh
   kb_wire/                  rig side of KB Wire: kbwire_rig.sh install/remove + dispatcher
+  kb_page/                  rig side of KB Page: kbpage_listen.sh (btmon) + kbpage_decode.py (offline)
 harness/
   run_payload.sh            runs a real payload file under busybox ash + shim
   pager_shim.sh             simulated Pager UI (LOG/pickers/spinner/vibrate)
@@ -43,6 +47,7 @@ harness/
   fixtures/nr/              netrecon fixture set (up.txt, macmap.txt, neigh.txt)
   fixtures/gr/cap.txt       sanitized tcpdump capture fixture
   fixtures/whisper/         KB Whisper triage fixtures (capture + dns log shapes)
+  fixtures/kbpage/          KB Page decoder fixtures (frames.log, btmon wrapped, junk-suffix)
 .github/workflows/test.yml  CI: runs test_all.sh on every push
 ```
 
@@ -233,13 +238,13 @@ Three payloads, one product:
 
 And the perms lesson that hid behind a green run: `/root` is `0700`, so CGI workers cannot write loot under it **no matter the file perms** — captures go to a world-writable `/tmp` sink, and **Stop archives them as root**. Same architecture as the DNS log; the pattern is "unprivileged sink, privileged collection."
 
-Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (88/88 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
+Full cycle is **device-live-tested end-to-end** (Start → curl-client GET/POST/probes/DNS → Stop → verified clean), and the CGI paths run as CI unit tests (112/112 suite). Rogue-AP cloning is *not* part of this: fresh AP interfaces cannot be brought up on this firmware (device-proven), so KB Portal only ever serves its own AP.
 
 ---
 
 ## KB Whisper
 
-**Version 1.0 · live counter-surveillance over KB Portal · payload pair `interception → KB Whisper Start/Stop` + bundled `gate_card` lure · CI 88/88**
+**Version 1.0 · live counter-surveillance over KB Portal · payload pair `interception → KB Whisper Start/Stop` + bundled `gate_card` lure · CI 112/112**
 
 KB Portal captures *everything* and tells you *nothing until you stop it*. KB Whisper closes that loop: a detached watcher lives on the Pager, reads the portal's capture log as it grows, triages every new line, and speaks to the **only channel that leaves zero network evidence — the LCD, the vibration motor, and the speaker**. While the trap sits, the pager itself becomes your instrument: you feel a credential land, you hear when your lure gets forwarded into someone's chat.
 
@@ -283,7 +288,63 @@ Device-class intel comes from the same watcher design applied to the DNS log: kn
 
 ### Honest edges
 
-The RTTTL note strings for the vibrate/chime are educated guesses against the ringtones doc (guarded — worst case is silence, never noise spam; the chime fires **once per run** by design). And the on-device detached run (`setsid` under musl ash) is deployed and syntax-proven but awaits its first physical witness — CI covers compose, triage exactness, lure CGI behavior, cancel/refuse paths, and stop-summary (suite 88/88); a joined-client live cycle with the LCD observed is the remaining ritual, same as every payload here earns its "live" word.
+The RTTTL note strings for the vibrate/chime are educated guesses against the ringtones doc (guarded — worst case is silence, never noise spam; the chime fires **once per run** by design). And the on-device detached run (`setsid` under musl ash) is deployed and syntax-proven but awaits its first physical witness — CI covers compose, triage exactness, lure CGI behavior, cancel/refuse paths, and stop-summary (suite 112/112); a joined-client live cycle with the LCD observed is the remaining ritual, same as every payload here earns its "live" word.
+
+---
+
+## KB Page
+
+**Version 1.0 · BLE advertisement broadcaster (payload pair `interception → KB Page Start/Stop` + rig-side `tools/kb_page/`) · CI 112/112 · device-witnessed 2026-10-10**
+
+Every other payload *listens*. KB Page makes the Pager **speak**: your text goes out as rotating BLE advertisements — no pairing, no connection, no receiver consent, zero network footprint. It is literally a pager again: one-way, repeats forever, anyone with a receiver in range can read it. The channel's honest nature: *anyone-can-hear*, never *made-to-see* — a phone will never pop your message on screen, but every Flipper/laptop sniffer within earshot decodes it. Bluetooth messages devices that run an inbox (GATT/RFCOMM/OBEX, pairing + prompt), or the open air (advertisements). KB Page owns the air lane.
+
+### Quickstart (device walkthrough)
+
+1. **Home → Payloads → interception → KB Page Start.** Enter the page text (printable ASCII; shell metachars `" $ backtick ` stripped defensively; capped at 288 chars = 16 frames).
+2. **Pick a pace** — Fast (1 s/frame), Steady (2 s), Slow (5 s) — and a **window**: 2 min, 10 min, or Until Stop. The rotator then **detaches** (`setsid`): close the payload, pocket the pager, it keeps talking.
+3. **Listen** (rig with a BT adapter — Devbox2 has none, any $5 USB dongle works): `sudo tools/kb_page/kbpage_listen.sh` → frames print as they air, and the full message prints when reassembled:
+   ```
+   [frame 0/3] 'SMAUG GUARDS THE H'
+   [frame 1/3] 'OARD AND PAGES THE'
+   [frame 2/3] ' NIGHT SHIFT AWAY'
+   === MESSAGE (3 frames): 'SMAUG GUARDS THE HOARD AND PAGES THE NIGHT SHIFT AWAY' ===
+   ```
+   No adapter handy? `frames.log` (every frame the rotator *sent*, on-device loot) decodes offline with `kbpage_decode.py` — same code path, proven byte-identical.
+4. **KB Page Stop** — marker pull (rotator self-exits within one frame), exact-PID kill, then the **power off/on ladder**: the device-PROVEN flush (`advertising_removed: instance N` witnessed on power off — there is no `del-adv` in this btmgmt build). Prints what was broadcast; radio left dark.
+
+### KBP v1 — the frame
+
+`adv_data = 020106 <len> ff ffff 4b4250 01 <seq> <total> <text…>`
+
+| Field | Bytes | Meaning |
+|---|---|---|
+| Flags AD | `02 01 06` | standard LE-general-discoverable flags |
+| Len | 1 | `9 + T`, bounds the frame — the decoder never trusts trailing pad |
+| Mfg AD | `ff` | AD type 0xFF manufacturer-specific |
+| Company | `ff ff` | 0xFFFF — BT SIG reserved/test id, our non-colliding lane |
+| Magic+ver | `4b 42 50 01` | "KBP" + version 1 |
+| seq / total | 2 | frame index and count (wrapping, ≤16 frames/cycle) |
+| text | T ≤ 18 | printable ASCII only — sanitizer keeps it so |
+
+Encoder and decoder are **pure** (ash functions / stdlib python, no I/O) — the house law of the testable core. Harness pins KATs: exact HELLO frame, the 18-char cap with correct length byte, `kbp_hex` against `od` on the host, plus decoder fixtures for solid-hex replay, **btmon wrapped-continuation lines**, pad-junk refusal, and mid-frame-magic refusal (a magic found mid-blob is NOT a frame — refuse, don't guess).
+
+### Two device laws this build paid for in probe hours
+
+- **Stdin law:** `btmgmt` **hangs** when stdin is instant-EOF (`/dev/null`, the setsid default) and returns normally when stdin yields a newline first. Every call in rotator/stop is `echo | timeout 6 btmgmt ...`. Miss this and a detached broadcaster silently does nothing.
+- **Instance-ID cliff:** this kernel accepts instance ids 1–20, rejects 32 with status 0x0d (Invalid Parameters) — the true cliff is between, unmeasured. We rotate ids 1→2→3→1 (each id reused only after 3 intervals > its TTL, never colliding). Most of the probe-session confusion chasing 0x0d *was this*, not frame content.
+
+### The design laws it keeps
+
+- **TTL on every instance** (`-t interval*2`): if the rotator is SIGKILLed, the last advertisement expires by itself in ≤2 intervals. The power ladder is the *second* kill path, not the only one.
+- **Marker = kill-switch**, same contract as every KB pair: Stop pulls the marker, loop breaks, ladder flushes, compose self-deletes.
+- **Compose-injection discipline:** page text passes a two-layer sanitizer (`tr -cd ' -~'` then strip `" $ backtick \`), and CI asserts the composed env header can contain no shell metacharacters. Payload-input is a hostile input like any other.
+- **tmpfs compose, loot frames.log:** nothing touches `/mmc` except the frame log you'll collect with KB Loot. Reboot erases the broadcaster.
+
+### Honest edges
+
+- **Byte-level on-air capture needs a *second* adapter**: a controller cannot sniff its own advertisements, and on-pager `btmon` sees only MGMT control lines — by design of the monitor socket, not a bug. What IS proven on-device: our frames *accepted* (ids 1–3), *simultaneously live* (mid-flight power off emitted `advertising_removed: instance 1,2,3`), TTL-expiring, ladder-flushing. Put any dongle on the rig and `kbpage_listen.sh` closes the last inch.
+- **Attributable:** the internal adapter cannot randomize its address (`btmgmt`: supported options `public-address` only) — every page traces to the pager MAC unless you dongle the USB CSR adapter. For authorized own-air broadcast this is a non-issue; know it before you care.
+- **The phone law, stated once:** no silent message-push into a phone's inbox exists over Bluetooth — those inboxes hide behind app-level auth. Advertisements are heard, notifications are consented. Anyone selling the latter as the former is selling a scanner.
 
 ---
 
@@ -300,7 +361,7 @@ Design properties, same discipline as the rest of the suite:
 - **Undo is the product**: Stop = kill, harvest, verify (tcpdump gone, ring+marker cleaned), counts + first-hits preview
 - **No injection, no TLS interception**: the tap only ever takes what clients already send in the clear. It is a mirror of the operator's own network hygiene.
 
-Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 88/88.
+Live-witnessed cycle 2026-09-09 (device + devbox as the client): Start → bait POST creds + Basic auth + querystring creds across the AP link → Stop. Harvest caught **all three channels**, decoded `Authorization: Basic YWRtaW46…` → `admin:<password>` byte-exact, archived the 44 KB ring, wrote the sha256, cleaned everything. Two bugs found on the way (both mine, both in the *test*, not the payload: a planted-token mismatch, and a python heredoc that wrote a literal NUL into test_all.sh because `\0` inside a python string is not shell `\0` — binary test file, caught by grep, fixed with a byte-splice). Suite: 112/112.
 
 ---
 
@@ -322,7 +383,7 @@ Every DNS-dropping payload now **proves its own effect before claiming LIVE**: a
 
 **Never trust a config drop you haven't queried through.** Outcome verification, or the payload lies to the operator.
 
-Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 88/88 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
+Live-witnessed cycle 2026-09-09: two targets listed → Start → canary verified → both names answered Pager-side and served their own-name re-auth pages (GET + POST + query-string), **unlisted names kept real resolution (NXDOMAIN — scope discipline proven in the same run)**, credential POST captured with `tgt=` + URL-encoded user/pass, Stop → DNS restored + verified, capture archived + hashed, port 80 freed, confdir zeroed. CI grew to 112/112 (ash parity, CGI unit paths incl. field-variant parsing and raw-body fallback).
 
 ---
 
@@ -337,7 +398,7 @@ Hijack needs names to hijack. KB Names gets them. Two modes, auto-detected — t
 
 **Output → pipeline:** after the listen, `LIST_PICKER` offers to **merge the harvested names into `/root/portals/hijack_targets.txt`** (dedup, shape-validated, cap 25, old file preserved as `.bak`) — GhostRecon → Names → Hijack becomes one intelligence loop: who's talking → what they trust → serve them their own names back.
 
-**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 88/88 including a verbose-format extraction unit built from the real captured log lines.
+**Self-verifying, per the canary rule:** the log drop is proven before the listen starts — a `kbn_selftest` query must actually land in the query log or the payload reverts and refuses. First live run proved the rule's worth *inverted*: self-test passed, harvest came back empty — three debug rounds later the culprit was **my awk expecting the classic `A?` log format while `log-queries=extra` switches dnsmasq to the verbose format** (`1 172.16.52.133/33736 query[A] name from client`). The lesson that outlives the bug: *sample the real output format before writing the parser* — a self-test can only prove what it actually tests. Second run, live-witnessed: five names fired from a joined client → **3 captured** (uniq-c dedup ate the two repeats, as designed), client hostname `Devbox2` from leases, target file seeded, confdir back to 0, DNS answering for real. CI 112/112 including a verbose-format extraction unit built from the real captured log lines.
 
 ---
 
@@ -408,7 +469,7 @@ The agent is **operator-placed, per-host, as a copy**. That is the entire propag
 
 ### 5. Why it works
 
-Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (88/88, with replay, at-most-once, and refusal paths as units, not slides).
+Because each promise is *architecturally* enforced, not procedurally promised. Scope is enforced at queue time against the IP the server itself observed at registration (the agent never asserts its own scope — the server records it). Expiry needs no operator memory; the KILL answer is the server's idle behavior after the epoch. The replay guard means a captured packet buys an attacker nothing. The phrase never touches the repo (env var `KB_PH`; conf key `PHRASE`), and — a live lesson from the build — the redaction-shape of that assignment pattern was hostile enough to transport layers that the word itself was retired codebase-wide, with a round-trip unit test proving the replacement survives the same pipe that ate its predecessor. The agent is dumb *by architecture*, which is the same reason the whole suite stays honest: complexity that could misbehave was removed, not controlled. And the whole loop was witnessed end-to-end on localhost before shipping — register → gate → execute → results → kill/recall/expire all behaving per spec — then made CI (112/112, with replay, at-most-once, and refusal paths as units, not slides).
 
 ### 6. Where to use it — and where not to
 

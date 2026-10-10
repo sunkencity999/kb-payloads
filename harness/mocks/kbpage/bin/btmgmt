@@ -1,0 +1,19 @@
+#!/bin/sh
+# mocks/kbpage/bin/btmgmt — records every btmgmt call, answers like FW 1.5.0-epic.
+# Contract (device-verified 2026-10-10):
+#   add-adv ... <inst>            -> "Instance added: N"
+#   power off/on                  -> Set Powered complete lines
+#   NO del-adv / show-adv in this build (invalid command)
+LOGF=${KBP_MOCK_LOG:-/tmp/kbpage_mock_calls}
+case "$1" in
+  add-adv)
+    echo "add-adv $*" >> "$LOGF"
+    for a in "$@"; do last=$a; done        # instance id is last positional
+    echo "Instance added: $last" ;;
+  power)
+    echo "power $*" >> "$LOGF"
+    echo "hci0 Set Powered complete, settings: ssp br/edr le secure-conn" ;;
+  *)
+    echo "$1 $*" >> "$LOGF"
+    echo "Invalid command in menu mgmt: $1" >&2; exit 1 ;;
+esac

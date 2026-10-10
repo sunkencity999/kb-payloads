@@ -334,11 +334,11 @@ else
   echo "SKIP  decoder fixtures (no python3/decoder)"
 fi
 # --- start payload: compose path; sanitizer strips shell meta ---
-run "compose (no spawn)" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w.sh" KBP_PIDFILE="$KPT/rot.pid" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=HOARD STATUS: SECURE\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
+run "compose (no spawn)" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w.sh" KBP_PIDFILE="$KPT/rot.pid" PATH="$HERE/mocks/kbpage/bin:$PATH" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=HOARD STATUS: SECURE\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
 if [ -f "$KPT/w.sh" ] && busybox ash -n "$KPT/w.sh" >/dev/null 2>&1; then echo "PASS  composed rotator syntax-clean"; pass=$((pass+1)); else echo "FAIL  compose file"; fail=$((fail+1)); fi
-run "sanitize" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w2.sh" KBP_PIDFILE="$KPT/rot.pid" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=EVIL \$HOME \`id\` \"q\" \\z\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
+run "sanitize" "composed and checked" KBP_SPAWN=0 KBP_STATE="$KPT/state" KBP_RUN="$KPT/w2.sh" KBP_PIDFILE="$KPT/rot.pid" PATH="$HERE/mocks/kbpage/bin:$PATH" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --answers "TEXT_PICKER=EVIL \$HOME \`id\` \"q\" \\z\nLIST_PICKER=Steady (2 s)\nLIST_PICKER=2 minutes"
 if grep -q 'KBP_TEXT="EVIL HOME id q z"' "$KPT/w2.sh" 2>/dev/null; then echo "PASS  shell-meta stripped from compose header"; pass=$((pass+1)); else echo "FAIL  sanitizer ($(head -1 "$KPT/w2.sh" 2>/dev/null))"; fail=$((fail+1)); fi
-run "cancel" "cancelled - nothing broadcast" KBP_SPAWN=0 KBP_STATE="$KPT/state2" KBP_RUN="$KPT/w3.sh" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --cancel-first
+run "cancel" "cancelled - nothing broadcast" KBP_SPAWN=0 KBP_STATE="$KPT/state2" KBP_RUN="$KPT/w3.sh" PATH="$HERE/mocks/kbpage/bin:$PATH" MOCK_DIR=$(mktemp -d) -- "$KPP/payload.sh" --cancel-first
 if [ ! -f "$KPT/w3.sh" ]; then echo "PASS  cancel writes no compose"; pass=$((pass+1)); else echo "FAIL  cancel composed"; fail=$((fail+1)); fi
 # --- LIVE end-to-end against mock btmgmt ---
 rm -f "$KPT/mockcalls"

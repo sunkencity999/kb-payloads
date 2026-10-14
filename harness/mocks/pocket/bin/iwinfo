@@ -1,0 +1,10 @@
+#!/bin/sh
+# mocks/pocket/bin/iwinfo — `<iface> mode` -> Managed|unknown from air state
+S=${KBK_MOCK_STATE:-/tmp/pocket_state}
+ss=""
+[ -f "$S/ssid" ] && ss=$(cat "$S/ssid" 2>/dev/null)
+case "$2" in
+  mode) [ -n "$ss" ] && echo "Managed" || echo "unknown" ;;
+  *)    echo "unknown" ;;
+esac
+exit 0

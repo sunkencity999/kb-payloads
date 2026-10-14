@@ -1,0 +1,12 @@
+#!/bin/sh
+# mocks/pocket/bin/WIFI_MGMT_AP — stateful mock: records calls AND flips the
+# air-state file `iw` reads, so the watchdog's PROBE proves real logic.
+# Contract (device usage text read 2026-10-14): WIFI_MGMT_AP [iface] [ssid] [enc] [key] {bssid}
+S=${KBK_MOCK_STATE:-/tmp/pocket_state}; L=${KBK_MOCK_LOG:-/tmp/pocket_calls}
+mkdir -p "$S" 2>/dev/null
+echo "WIFI_MGMT_AP $*" >> "$L"
+if [ $# -ge 4 ]; then
+  printf '%s' "$2" > "$S/ssid"; printf '%s' "$3" > "$S/enc"
+  printf '%s' "$4" > "$S/key"
+fi
+exit 0

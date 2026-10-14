@@ -1,0 +1,26 @@
+#!/bin/sh
+# mocks/pocket/bin/iw — reads air state from $KBK_MOCK_STATE:
+#   dev <iface> info          -> header + "\tssid <x>" when AP on air
+#   dev <iface> station dump  -> N fake station lines (N from $S/stations, 0 default)
+# ESSID is printed whole (spaces included) — mirrors the real `iw` shape the
+# watchdog's sed parser expects.
+S=${KBK_MOCK_STATE:-/tmp/pocket_state}
+ss=""
+[ -f "$S/ssid" ] && ss=$(cat "$S/ssid" 2>/dev/null)
+case "$*" in
+  *"station dump"*)
+    n=0
+    if [ -f "$S/stations" ]; then n=$(cat "$S/stations"); fi
+    case "$n" in (''|*[!0-9]*) n=0;; esac
+    i=0
+    while [ "$i" -lt "$n" ]; do
+      i=$((i+1))
+      echo "Station AA:BB:CC:DD:EE:0${i} (on ${2:-wlan0mgmt})"
+    done ;;
+  *" info"*)
+    echo "Interface ${2:-wlan0mgmt}"
+    echo "	ifindex 9"
+    [ -n "$ss" ] && printf '\tssid %s\n' "$ss" ;;
+  *) : ;;
+esac
+exit 0

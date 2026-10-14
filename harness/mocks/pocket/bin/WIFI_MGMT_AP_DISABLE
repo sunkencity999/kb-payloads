@@ -1,0 +1,8 @@
+#!/bin/sh
+# mocks/pocket/bin/WIFI_MGMT_AP_DISABLE — silences the air state (iface stays
+# configured but off). Device usage: WIFI_MGMT_AP_DISABLE [interface]
+S=${KBK_MOCK_STATE:-/tmp/pocket_state}; L=${KBK_MOCK_LOG:-/tmp/pocket_calls}
+mkdir -p "$S" 2>/dev/null
+echo "WIFI_MGMT_AP_DISABLE $*" >> "$L"
+: > "$S/ssid" 2>/dev/null
+exit 0

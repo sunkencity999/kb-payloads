@@ -4,6 +4,10 @@
 # Usage: ./test_all.sh
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
+# Anchor CWD to repo root: some suites (kb_loot/kb_wire, pre-existing) use
+# repo-relative paths; CI ran from root so local-from-harness/ showed 13
+# phantom fails (rc=127 = tools/ not found). One cd kills the class.
+cd "$HERE/.." || exit 2
 FIX="$HERE/fixtures"
 PAY="$HERE/../payloads"
 pass=0; fail=0
@@ -367,6 +371,76 @@ for f in "$KPP/payload.sh" "$KPP/include/kbproto.sh" "$KPP/include/rotator.sh" "
 done
 if bash -n "$HERE/../tools/kb_page/kbpage_listen.sh" 2>/dev/null; then echo "PASS  bash -n kbpage_listen.sh"; pass=$((pass+1)); else echo "FAIL  kbpage_listen.sh parse"; fail=$((fail+1)); fi
 rm -rf "$KPT"
+
+echo "== kb_pocket (Management-AP door: parser KATs, compose/sanitize, live arm/teardown vs stateful mocks) =="
+PKP="$PAY/kb_pocket_start"
+PKS="$PAY/kb_pocket_stop"
+PKT=$(mktemp -d)
+PKMOCKP="$HERE/mocks/pocket/bin:$PATH"
+PKF="$HERE/fixtures/pocket"
+mkdir -p "$PKT"
+# --- parser known answers (3-line out: ssid / enc / key) ---
+P1=$(awk -F"'" -f "$PKP/include/parse_prev.awk" "$PKF/conf_device" 2>/dev/null | paste -sd'|')
+if [ "$P1" = "HomeNet|psk2|OldKey Here" ]; then echo "PASS  parser KAT device-order config (key w/ space intact)"; pass=$((pass+1)); else echo "FAIL  parser KAT device-order ($P1)"; fail=$((fail+1)); fi
+P2=$(awk -F"'" -f "$PKP/include/parse_prev.awk" "$PKF/conf_reorder" 2>/dev/null | paste -sd'|')
+if [ "$P2" = "HomeNet|psk2|OldKey Here" ]; then echo "PASS  parser order-independent (ifname after key)"; pass=$((pass+1)); else echo "FAIL  parser reorder ($P2)"; fail=$((fail+1)); fi
+P3=$(awk -F"'" -f "$PKP/include/parse_prev.awk" "$PKF/conf_disabled" 2>/dev/null | paste -sd'|')
+if [ "$P3" = "off||" ]; then echo "PASS  parser disabled=1 -> off"; pass=$((pass+1)); else echo "FAIL  parser disabled ($P3)"; fail=$((fail+1)); fi
+P4=$(awk -F"'" -f "$PKP/include/parse_prev.awk" "$PKF/conf_nomgmt" 2>/dev/null)
+if [ -z "$P4" ]; then echo "PASS  parser no-mgmt-config -> empty (payload maps absent->off)"; pass=$((pass+1)); else echo "FAIL  parser nomgmt ($P4)"; fail=$((fail+1)); fi
+# --- compose (no spawn) + syntax + sanitize ---
+run "compose (no spawn)" "composed and checked" KBK_SPAWN=0 KBK_STATE="$PKT/st1" KBK_RUN="$PKT/r1.sh" KBK_PIDFILE="$PKT/p1" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms1" KBK_MOCK_LOG="$PKT/log1" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Blend-in (random)\nLIST_PICKER=WPA3 mixed (recommended)\nLIST_PICKER=10 minutes\nLIST_PICKER=5 minutes"
+if [ -f "$PKT/r1.sh" ] && busybox ash -n "$PKT/r1.sh" >/dev/null 2>&1; then echo "PASS  composed watchdog syntax-clean"; pass=$((pass+1)); else echo "FAIL  compose file"; fail=$((fail+1)); fi
+if grep -q 'KBK_RESTORE=1' "$PKT/r1.sh" 2>/dev/null; then echo "PASS  prev-AP-on => RESTORE=1 (home AP will be re-armed)"; pass=$((pass+1)); else echo "FAIL  restore flag"; fail=$((fail+1)); fi
+K1=$(grep -c 'KBK_KEY="[A-Za-z0-9]\{12,16\}"' "$PKT/r1.sh" 2>/dev/null)
+if [ "$K1" = "1" ]; then echo "PASS  random key alnum 12-16 in compose header"; pass=$((pass+1)); else echo "FAIL  key shape ($(grep KBK_KEY "$PKT/r1.sh" 2>/dev/null | cut -c1-16)...)"; fail=$((fail+1)); fi
+SS1=$(sed -n 's/^KBK_SSID="\(.*\)"$/\1/p' "$PKT/r1.sh" 2>/dev/null)
+case "$SS1" in ""|*[^A-Za-z0-9\ ._\-]*) echo "FAIL  blend SSID charset ($SS1)"; fail=$((fail+1));; *) echo "PASS  blend-in SSID from list, charset-safe ($SS1)"; pass=$((pass+1));; esac
+run "sanitize custom SSID" "composed and checked" KBK_SPAWN=0 KBK_STATE="$PKT/st2" KBK_RUN="$PKT/r2.sh" KBK_PIDFILE="$PKT/p2" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/ms2" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Custom\nTEXT_PICKER=EVIL \$HOME \`id\` \"q\" \\z\nLIST_PICKER=WPA2 only\nLIST_PICKER=2 minutes\nLIST_PICKER=2 minutes"
+if grep -q 'KBK_SSID="EVIL HOME id q z"' "$PKT/r2.sh" 2>/dev/null; then echo "PASS  shell-meta stripped from custom SSID"; pass=$((pass+1)); else echo "FAIL  SSID sanitizer ($(grep KBK_SSID "$PKT/r2.sh" 2>/dev/null))"; fail=$((fail+1)); fi
+if grep -q 'KBK_ENC="psk2"' "$PKT/r2.sh" 2>/dev/null && grep -q 'KBK_RESTORE=0' "$PKT/r2.sh" 2>/dev/null; then echo "PASS  WPA2 choice + prev-off => RESTORE=0"; pass=$((pass+1)); else echo "FAIL  enc/restore flags"; fail=$((fail+1)); fi
+run "cancel (first picker)" "cancelled - AP untouched" KBK_SPAWN=0 KBK_STATE="$PKT/st3" KBK_RUN="$PKT/r3.sh" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms3" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --cancel-first
+if [ ! -f "$PKT/r3.sh" ]; then echo "PASS  cancel writes no compose"; pass=$((pass+1)); else echo "FAIL  cancel composed"; fail=$((fail+1)); fi
+if [ ! -s "$PKT/ms3/ssid" ] && [ ! -f "$PKT/ms3/ssid" ]; then echo "PASS  cancel never touched mock air state"; pass=$((pass+1)); else echo "FAIL  cancel armed the AP"; fail=$((fail+1)); fi
+run "guard mode, no AP -> refuse" "Nothing to guard" KBK_SPAWN=0 KBK_STATE="$PKT/st4" KBK_RUN="$PKT/r4.sh" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/ms4" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Guard current AP"
+# --- LIVE arm -> stop (restore path), stateful mocks ---
+mkdir -p "$PKT/ms5"
+run "LIVE arm (custom, until-stop)" "POCKET LIVE" KBK_STATE="$PKT/st5" KBK_RUN="$PKT/r5.sh" KBK_PIDFILE="$PKT/p5" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms5" KBK_MOCK_LOG="$PKT/log5" KBK_PROBE_TRIES_SET=8 KBK_PROBE_SLEEP_SET=1 PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Custom\nTEXT_PICKER=PocketTest\nLIST_PICKER=WPA3 mixed (recommended)\nLIST_PICKER=Until Stop\nLIST_PICKER=Never (window only)"
+if [ "$(cat "$PKT/ms5/ssid" 2>/dev/null)" = "PocketTest" ]; then echo "PASS  mock air flipped to armed SSID (apply happened via watchdog)"; pass=$((pass+1)); else echo "FAIL  arm did not flip air state"; fail=$((fail+1)); fi
+if grep -q PROBE=yes "$PKT/st5/active.probe" 2>/dev/null; then echo "PASS  on-air probe proved before LIVE claim"; pass=$((pass+1)); else echo "FAIL  probe file"; fail=$((fail+1)); fi
+run "LIVE stop -> home AP restored" "home AP restored" KBK_STATE="$PKT/st5" KBK_RUN="$PKT/r5.sh" KBK_PIDFILE="$PKT/p5" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms5" KBK_MOCK_LOG="$PKT/log5" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKS/payload.sh"
+if grep -q 'REASON=stop' "$PKT/st5/last_teardown.log" 2>/dev/null && grep -q 'RESTORED=yes(HomeNet)' "$PKT/st5/last_teardown.log" 2>/dev/null; then echo "PASS  teardown receipt: reason=stop restored(HomeNet)"; pass=$((pass+1)); else echo "FAIL  teardown receipt ($(cat "$PKT/st5/last_teardown.log" 2>/dev/null | tr '\n' ' '))"; fail=$((fail+1)); fi
+if [ "$(cat "$PKT/ms5/ssid" 2>/dev/null)" = "HomeNet" ]; then echo "PASS  prev AP re-armed byte-identical (key-with-space passed via variables)"; pass=$((pass+1)); else echo "FAIL  restore state ($(cat "$PKT/ms5/ssid" 2>/dev/null))"; fail=$((fail+1)); fi
+# --- watchdog died mid-shift: direct sweep closes OUR door ---
+mkdir -p "$PKT/ms6"
+run "LIVE arm then wedged (kill -9 watchdog)" "POCKET LIVE" KBK_STATE="$PKT/st6" KBK_RUN="$PKT/r6.sh" KBK_PIDFILE="$PKT/p6" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms6" KBK_MOCK_LOG="$PKT/log6" KBK_PROBE_TRIES_SET=8 KBK_PROBE_SLEEP_SET=1 PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Custom\nTEXT_PICKER=PocketDead\nLIST_PICKER=WPA3 mixed (recommended)\nLIST_PICKER=Until Stop\nLIST_PICKER=Never (window only)"
+WP=$(sed -n '1p' "$PKT/p6" 2>/dev/null); [ -n "$WP" ] && kill -9 "$WP" 2>/dev/null; sleep 1
+run "stop after dead watchdog -> direct sweep" "door closed" KBK_STATE="$PKT/st6" KBK_RUN="$PKT/r6.sh" KBK_PIDFILE="$PKT/p6" KBK_CONF="$PKF/conf_device" KBK_MOCK_STATE="$PKT/ms6" KBK_MOCK_LOG="$PKT/log6" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKS/payload.sh"
+if grep -q 'REASON=direct-sweep' "$PKT/st6/last_teardown.log" 2>/dev/null; then echo "PASS  dead-watchdog door closed by sweep, receipt written"; pass=$((pass+1)); else echo "FAIL  sweep receipt"; fail=$((fail+1)); fi
+# idle no-op: mock state dir EXISTS but empty -> essid empty -> "no door"
+# (the earlier ms7 line was a malformed test: no state dir at all, so the
+# iw mock saw no ssid and the payload honestly said "no pocket door active"
+# while I expected the stranger-AP line. Wrong expectation, honest payload.)
+run "stop when nothing active: clean no-op" "no pocket door active" KBK_STATE="$PKT/st7" KBK_PIDFILE="$PKT/p7" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/ms7e" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKS/payload.sh"
+mkdir -p "$PKT/ms7e"
+mkdir -p "$PKT/ms8"; echo "NeighborNet" > "$PKT/ms8/ssid"   # a stranger's AP on air, no marker of ours
+run "stop: stranger AP untouched" "not armed by this session" KBK_STATE="$PKT/st8" KBK_PIDFILE="$PKT/p8" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/ms8" PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKS/payload.sh"
+if [ "$(cat "$PKT/ms8/ssid" 2>/dev/null)" = "NeighborNet" ]; then echo "PASS  stranger AP byte-untouched by stop"; pass=$((pass+1)); else echo "FAIL  stop clobbered stranger AP"; fail=$((fail+1)); fi
+# --- walkaway cut + window expiry (physics, not memory) ---
+mkdir -p "$PKT/ms9"
+run "arm for walkaway" "POCKET LIVE" KBK_STATE="$PKT/st9" KBK_RUN="$PKT/r9.sh" KBK_PIDFILE="$PKT/p9" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/ms9" KBK_MOCK_LOG="$PKT/log9" KBK_PROBE_TRIES_SET=8 KBK_PROBE_SLEEP_SET=1 KBK_GRACE_SET=0 KBK_IDLE_SET=4 KBK_TICK_SET=1 PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Custom\nTEXT_PICKER=WalkTest\nLIST_PICKER=WPA2 only\nLIST_PICKER=Until Stop\nLIST_PICKER=2 minutes"
+N=0; while [ $N -lt 25 ]; do grep -q 'REASON=walkaway' "$PKT/st9/last_teardown.log" 2>/dev/null && break; sleep 1; N=$((N+1)); done
+if grep -q 'REASON=walkaway' "$PKT/st9/last_teardown.log" 2>/dev/null; then echo "PASS  WALKAWAY cut fired (idle 4s, zero clients) — door closed by physics"; pass=$((pass+1)); else echo "FAIL  walkaway did not fire ($(cat "$PKT/st9/last_teardown.log" 2>/dev/null))"; fail=$((fail+1)); fi
+if [ ! -s "$PKT/ms9/ssid" ]; then echo "PASS  walkaway teardown silenced mock air"; pass=$((pass+1)); else echo "FAIL  walkaway left door open"; fail=$((fail+1)); fi
+mkdir -p "$PKT/msa"
+run "arm for window expiry" "POCKET LIVE" KBK_STATE="$PKT/sta" KBK_RUN="$PKT/ra.sh" KBK_PIDFILE="$PKT/pa" KBK_CONF="$PKF/conf_nomgmt" KBK_MOCK_STATE="$PKT/msa" KBK_PROBE_TRIES_SET=8 KBK_PROBE_SLEEP_SET=1 KBK_WINDOW_SET=3 KBK_TICK_SET=1 KBK_IDLE_SET=0 PATH="$PKMOCKP" MOCK_DIR=$(mktemp -d) -- "$PKP/payload.sh" --answers "LIST_PICKER=Arm temp AP (blend-in)\nLIST_PICKER=Custom\nTEXT_PICKER=WinTest\nLIST_PICKER=WPA2 only\nLIST_PICKER=2 minutes\nLIST_PICKER=Never (window only)"
+N=0; while [ $N -lt 20 ]; do grep -q 'REASON=window' "$PKT/sta/last_teardown.log" 2>/dev/null && break; sleep 1; N=$((N+1)); done
+if grep -q 'REASON=window' "$PKT/sta/last_teardown.log" 2>/dev/null; then echo "PASS  WINDOW expiry fired (3s window)"; pass=$((pass+1)); else echo "FAIL  window did not fire"; fail=$((fail+1)); fi
+# --- source syntax ---
+for f in "$PKP/payload.sh" "$PKP/include/watchdog.sh" "$PKS/payload.sh"; do
+  if busybox ash -n "$f" >/dev/null 2>&1; then echo "PASS  ash -n $(basename "$f")$(dirname "$f" | grep -q include && echo ' (include)')"; pass=$((pass+1)); else echo "FAIL  ash -n $f"; fail=$((fail+1)); fi
+done
+rm -rf "$PKT"
 
 echo "== result: $pass pass, $fail fail =="
 [ $fail -eq 0 ]

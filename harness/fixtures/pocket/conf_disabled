@@ -1,0 +1,7 @@
+config wifi-iface 'wlan0mgmt'
+	option ifname 'wlan0mgmt'
+	option mode 'ap'
+	option disabled '1'
+	option ssid 'HomeNet'
+	option encryption 'psk2'
+	option key 'OldKey Here'

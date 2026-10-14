@@ -1,0 +1,10 @@
+#!/bin/sh
+# mocks/pocket/bin/WIFI_MGMT_AP_CLEAR — wipes the stored config (in the mock
+# universe, same observable air-state as DISABLE plus a cleared=1 marker so
+# tests can distinguish clear from disable ordering).
+S=${KBK_MOCK_STATE:-/tmp/pocket_state}; L=${KBK_MOCK_LOG:-/tmp/pocket_calls}
+mkdir -p "$S" 2>/dev/null
+echo "WIFI_MGMT_AP_CLEAR $*" >> "$L"
+: > "$S/ssid" 2>/dev/null
+echo 1 > "$S/cleared"
+exit 0
